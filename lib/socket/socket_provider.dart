@@ -21,7 +21,7 @@ String linkServer = 'http://uksw-blast-api.marikhsalatiga.com';
 String linkLocal = 'http://localhost:8080';
 
   void connectToSocket() async {
-    socket = IO.io(linkLocal, <String, dynamic>{
+    socket = IO.io(linkServer, <String, dynamic>{
       'transports': ['websocket'],
     });
 
