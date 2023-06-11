@@ -17,12 +17,12 @@ class _HistoryState extends State<History> {
   List<history_models> listHistory = [];
   String? sortColumn;
   bool isAscending = true;
-  String linkServer = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String linkLocal = 'http://localhost:8080/';
+  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
+  //String link = 'http://localhost:8080/';
   Future<void> fetchData() async {
     try {
       final historyResponse = await http
-          .get(Uri.parse('${linkServer}history'));
+          .get(Uri.parse('${link}history'));
       if (historyResponse.statusCode == 200) {
         setState(() {
           List<dynamic> data = jsonDecode(historyResponse.body);

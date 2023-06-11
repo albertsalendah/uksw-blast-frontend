@@ -43,11 +43,11 @@ Widget buildScreenByIndex(int index, BuildContext context) {
       return const History();
     case 2:
       Future<void> logout() async {
-        String linkServer = 'http://uksw-blast-api.marikhsalatiga.com/';
-        //String linkLocal = 'http://localhost:8080/';
+        String link = 'http://uksw-blast-api.marikhsalatiga.com/';
+        //String link = 'http://localhost:8080/';
         try {
           final historyResponse =
-              await http.get(Uri.parse('${linkServer}logout'));
+              await http.get(Uri.parse('${link}logout'));
           if (historyResponse.statusCode == 200) {
             dynamic Data = jsonDecode(historyResponse.body);
             print(Data);

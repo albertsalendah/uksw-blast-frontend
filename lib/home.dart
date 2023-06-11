@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:blast_whatsapp/models/progdi_models.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'navigation/sidenavigationbar.dart';
 import 'package:http/http.dart' as http;
@@ -18,20 +21,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   TextEditingController messageController = TextEditingController();
   TextEditingController tahunController = TextEditingController();
-  TextEditingController progdiController = TextEditingController();
+  //TextEditingController progdiController = TextEditingController();
   //List<File> files = [];
   List<PlatformFile> files = [];
   String selectedValue = 'All';
   String selectedYear = '2023-2024';
   List<Job> jobs = [];
   late SocketProvider socketProvider;
-  String linkServer = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String linkLocal = 'http://localhost:8080/';
+  List<ProgdiModels> programDataList = [];
+  String selectedKodeProgdi = '';
+  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
+  //String link = 'http://localhost:8080/';
 
   @override
   void initState() {
     socketProvider = Provider.of<SocketProvider>(context, listen: false);
     socketProvider.listJob = handleJobs;
+    //loadProgramData();
     super.initState();
   }
 
@@ -41,8 +47,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-  
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -50,13 +54,13 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> sendPostRequest() async {
-    var url = '${linkServer}send-message';
+    var url = '${link}send-message';
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.headers['Content-Type'] = 'multipart/form-data';
     request.fields['message'] = messageController.text;
     request.fields['tahun'] = selectedYear; //tahunController.text;
-    request.fields['progdi'] = progdiController.text;
+    request.fields['progdi'] = selectedKodeProgdi;
     request.fields['status_regis'] = selectedValue;
 
     // Attach files, if any
@@ -75,7 +79,7 @@ class _HomeState extends State<Home> {
         );
       }
     }
-
+    
     var response = await request.send();
     var responseString = await response.stream.bytesToString();
     var jsonResponse = json.decode(responseString);
@@ -117,8 +121,21 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<void> loadProgramData() async {
+    String jsonData = await rootBundle.loadString("assets/list_progdi.json");
+    List<dynamic> jsonList = json.decode(jsonData);
+
+    List<ProgdiModels> dataList =
+        jsonList.map((json) => ProgdiModels.fromJson(json)).toList();
+
+    setState(() {
+      programDataList = dataList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    loadProgramData();
     final activeJobs = jobs.where((job) => job.status != 'completed').toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
@@ -164,10 +181,37 @@ class _HomeState extends State<Home> {
                       },
                     ),
                   ),
-                  TextField(
-                    maxLines: 1,
-                    controller: progdiController,
-                    decoration: InputDecoration(labelText: 'Progdi'),
+                  // TextField(
+                  //   maxLines: 1,
+                  //   controller: progdiController,
+                  //   decoration: InputDecoration(labelText: 'Progdi'),
+                  // ),
+                  DropdownSearch<ProgdiModels>(
+                    items: programDataList, //List.generate(50, (i) => i),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedKodeProgdi = value!.kodeProgdi;                       
+                      });
+                    },
+                    dropdownBuilder: (context, selectedItem) => Text(
+                        selectedItem?.namaProgdi ?? "Progdi"),
+                   
+                    popupProps: PopupProps.menu(
+                      //showSearchBox: true,
+                      title: Text('Daftar Progdi'),
+                      itemBuilder: (context, item, isSelected) => ListTile(
+                        title: Column(
+                          children: [
+                            Text(
+                              item.namaProgdi,
+                              style: const TextStyle(
+                                  fontSize: 14.0, fontWeight: FontWeight.bold),
+                            ),
+                            const Divider(height: 1.0, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   DropdownButton<String>(
                     isExpanded: true,
@@ -198,7 +242,7 @@ class _HomeState extends State<Home> {
                   ElevatedButton(
                     onPressed: () async {
                       if (messageController.text.isNotEmpty &&
-                          progdiController.text.isNotEmpty) {
+                          selectedKodeProgdi.isNotEmpty) {
                         await sendPostRequest();
                       } else {
                         print("text kosong");
@@ -207,8 +251,9 @@ class _HomeState extends State<Home> {
                       setState(() {
                         messageController.text = '';
                         selectedYear = '2023-2024';
-                        progdiController.text = '';
+                        //progdiController.text = '';
                         selectedValue = 'All';
+                        selectedKodeProgdi = '';
                         files = [];
                       });
                     },
@@ -248,31 +293,37 @@ class _HomeState extends State<Home> {
             ),
 //--------------------PROGRESS-----------------------------------------------------------
             Visibility(
-              visible: true,//activeJobs.isNotEmpty,
+              visible: activeJobs.isNotEmpty,
               child: Flexible(
                 flex: 1,
                 child: Column(
                   children: [
-                    Center(
-                      child: const Text("Jangan Direfresh!!!"),
+                    const Center(
+                      child: Text("Jangan Direfresh!!!"),
                     ),
                     Expanded(
                       child: ListView.builder(
-                          itemCount: activeJobs.length,
-                          itemBuilder: (context, index) {
-                            final job = activeJobs[index];
-                            return ListTile(
-                              title: Text('Mengirim Pesan Ke Progdi : ${job.sendto}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Progress: ${job.progress}%'),
-                                  Text('Status: ${job.status}'),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                        itemCount: activeJobs.length,
+                        itemBuilder: (context, index) {
+                          final job = activeJobs[index];
+                          return ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Mengirim Pesan Ke Progdi : ${job.sendto}'),
+                              ],
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Progress: ${job.progress}%'),
+                                Text('Status: ${job.status}'),
+                                Text(job.message)
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -284,17 +335,17 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
 void popUp(BuildContext context, String text) {
-    AwesomeDialog(
-      context: context,
-      
-      showCloseIcon: true,
-      closeIcon: const Icon(
-        Icons.close_rounded,
-      ),
-      animType: AnimType.scale,
-      dialogType: DialogType.error,
-      title: 'ERROR',
-      desc: text,
-    ).show();
-  }
+  AwesomeDialog(
+    context: context,
+    showCloseIcon: true,
+    closeIcon: const Icon(
+      Icons.close_rounded,
+    ),
+    animType: AnimType.scale,
+    dialogType: DialogType.error,
+    title: 'ERROR',
+    desc: text,
+  ).show();
+}

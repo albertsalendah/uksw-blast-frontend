@@ -17,11 +17,11 @@ class SocketProvider extends ChangeNotifier {
   Function(List<Job>)? listJob;
   Function(String)? QR;
 
-String linkServer = 'http://uksw-blast-api.marikhsalatiga.com';
-String linkLocal = 'http://localhost:8080';
+String link = 'http://uksw-blast-api.marikhsalatiga.com';
+//String link = 'http://localhost:8080';
 
   void connectToSocket() async {
-    socket = IO.io(linkServer, <String, dynamic>{
+    socket = IO.io(link, <String, dynamic>{
       'transports': ['websocket'],
     });
 
@@ -71,6 +71,7 @@ String linkLocal = 'http://localhost:8080';
         final progress = data['progress'];
         final status = data['status'];
         final sendto = data['sendto'];
+        final message = data['message'];
 
         Job? existingJob;
         for (final job in jobs) {
@@ -84,9 +85,10 @@ String linkLocal = 'http://localhost:8080';
           // Update the existing job's progress and status
           existingJob.progress = progress;
           existingJob.status = status;
+          existingJob.message = message;
         } else {
           // Add the new job to the list
-          jobs.add(Job(id: jobId, progress: progress, status: status,sendto: sendto));
+          jobs.add(Job(id: jobId, progress: progress, status: status,sendto: sendto,message: message));
         }
         listJob?.call(jobs);
       //});
@@ -98,6 +100,7 @@ class Job {
   int progress;
   String status;
   String sendto;
+  String message;
 
-  Job({required this.id, this.progress = 0, this.status = 'processing',this.sendto=''});
+  Job({required this.id, this.progress = 0, this.status = 'processing',this.sendto='',this.message=""});
 }
