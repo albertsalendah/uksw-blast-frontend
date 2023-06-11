@@ -254,7 +254,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: [
                     Center(
-                      child: Text("Jangan Direfresh"),
+                      child: const Text("Jangan Direfresh!!!"),
                     ),
                     Expanded(
                       child: ListView.builder(
