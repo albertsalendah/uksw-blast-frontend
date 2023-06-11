@@ -25,6 +25,8 @@ class _HomeState extends State<Home> {
   String selectedYear = '2023-2024';
   List<Job> jobs = [];
   late SocketProvider socketProvider;
+  String linkServer = 'http://uksw-blast-api.marikhsalatiga.com/';
+  //String linkLocal = 'http://localhost:8080/';
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> sendPostRequest() async {
-    var url = 'http://uksw-blast-api.marikhsalatiga.com/send-message';
+    var url = '${linkServer}send-message';
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.headers['Content-Type'] = 'multipart/form-data';
@@ -246,24 +248,33 @@ class _HomeState extends State<Home> {
             ),
 //--------------------PROGRESS-----------------------------------------------------------
             Visibility(
-              visible: activeJobs.isNotEmpty,
+              visible: true,//activeJobs.isNotEmpty,
               child: Flexible(
                 flex: 1,
-                child: ListView.builder(
-                  itemCount: activeJobs.length,
-                  itemBuilder: (context, index) {
-                    final job = activeJobs[index];
-                    return ListTile(
-                      title: Text('Mengirim Pesan Ke Progdi : ${job.sendto}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Progress: ${job.progress}%'),
-                          Text('Status: ${job.status}'),
-                        ],
-                      ),
-                    );
-                  },
+                child: Column(
+                  children: [
+                    Center(
+                      child: Text("Jangan Direfresh"),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: activeJobs.length,
+                          itemBuilder: (context, index) {
+                            final job = activeJobs[index];
+                            return ListTile(
+                              title: Text('Mengirim Pesan Ke Progdi : ${job.sendto}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Progress: ${job.progress}%'),
+                                  Text('Status: ${job.status}'),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                    ),
+                  ],
                 ),
               ),
             ),

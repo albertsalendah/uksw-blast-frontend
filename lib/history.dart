@@ -17,10 +17,12 @@ class _HistoryState extends State<History> {
   List<history_models> listHistory = [];
   String? sortColumn;
   bool isAscending = true;
+  String linkServer = 'http://uksw-blast-api.marikhsalatiga.com/';
+  //String linkLocal = 'http://localhost:8080/';
   Future<void> fetchData() async {
     try {
-      final historyResponse =
-          await http.get(Uri.parse('http://uksw-blast-api.marikhsalatiga.com/history'));
+      final historyResponse = await http
+          .get(Uri.parse('${linkServer}history'));
       if (historyResponse.statusCode == 200) {
         setState(() {
           List<dynamic> data = jsonDecode(historyResponse.body);
@@ -61,8 +63,8 @@ class _HistoryState extends State<History> {
               .sort((a, b) => (a.tanggal ?? '').compareTo(b.tanggal ?? ''));
           break;
         case 'tahun_ajaran':
-          listHistory
-              .sort((a, b) => (a.tahun_ajaran ?? '').compareTo(b.tahun_ajaran ?? ''));
+          listHistory.sort(
+              (a, b) => (a.tahun_ajaran ?? '').compareTo(b.tahun_ajaran ?? ''));
           break;
         case 'progdi':
           listHistory
@@ -81,73 +83,79 @@ class _HistoryState extends State<History> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(title: Text('History')),
-    drawer: SideNavigationBar(),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: RefreshIndicator(
-        onRefresh: fetchData,
-        child: ListView(
-          children: [
-            DataTable(
-              columns: [
-                DataColumn(
-                  label: Text('Tanggal',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('tanggal'),
-                ),
-                DataColumn(
-                  label: Text('No Pendaftaran',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('no_pendaftaran'),
-                ),
-                DataColumn(
-                  label: Text('Nama',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('nama'),
-                ),
-                DataColumn(
-                  label: Text('Tahun Ajaran',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('tahun_ajaran'),
-                ),
-                DataColumn(
-                  label: Text('Progdi',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('progdi'),
-                ),
-                DataColumn(
-                  label: Text('Pesan',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('pesan'),
-                ),
-                DataColumn(
-                  label: Text('Status Registrasi',maxLines: 1),
-                  onSort: (columnIndex, _) => sortData('status_registrasi'),
-                ),
-              ],
-              rows: listHistory
-                  .map(
-                    (history) => DataRow(
-                      cells: [
-                        DataCell(Text(history.tanggal ?? '',maxLines: 1,)),
-                        DataCell(Text(history.no_pendaftaran ?? '',maxLines: 1)),
-                        DataCell(Text(history.nama ?? '',maxLines: 1)),
-                        DataCell(Text(history.tahun_ajaran ?? '',maxLines: 1)),
-                        DataCell(Text(history.progdi ?? '',maxLines: 1)),
-                        DataCell(Text(history.pesan ?? '',maxLines: 1)),
-                        DataCell(Text(history.status_registrasi ?? '',maxLines: 1)),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(title: Text('History')),
+      drawer: SideNavigationBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: RefreshIndicator(
+          onRefresh: fetchData,
+          child: ListView(
+            children: [
+              DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('Tanggal', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('tanggal'),
+                  ),
+                  DataColumn(
+                    label: Text('No Pendaftaran', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('no_pendaftaran'),
+                  ),
+                  DataColumn(
+                    label: Text('Nama', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('nama'),
+                  ),
+                  DataColumn(
+                    label: Text('Tahun Ajaran', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('tahun_ajaran'),
+                  ),
+                  DataColumn(
+                    label: Text('Progdi', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('progdi'),
+                  ),
+                  DataColumn(
+                    label: Text('Pesan', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('pesan'),
+                  ),
+                  DataColumn(
+                    label: Text('Status Registrasi', maxLines: 1),
+                    onSort: (columnIndex, _) => sortData('status_registrasi'),
+                  ),
+                ],
+                rows: listHistory
+                    .map(
+                      (history) => DataRow(
+                        cells: [
+                          DataCell(Text(
+                            history.tanggal ?? '',
+                            maxLines: 1,
+                          )),
+                          DataCell(
+                              Text(history.no_pendaftaran ?? '', maxLines: 1)),
+                          DataCell(Text(history.nama ?? '', maxLines: 1)),
+                          DataCell(
+                              Text(history.tahun_ajaran ?? '', maxLines: 1)),
+                          DataCell(Text(history.progdi ?? '', maxLines: 1)),
+                          DataCell(Text(history.pesan ?? '', maxLines: 1)),
+                          DataCell(Text(history.status_registrasi ?? '',
+                              maxLines: 1)),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: fetchData,
-      child: Icon(Icons.refresh),
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-  );
-}
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: fetchData,
+        child: Icon(Icons.refresh),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
 }

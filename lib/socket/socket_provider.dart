@@ -17,8 +17,11 @@ class SocketProvider extends ChangeNotifier {
   Function(List<Job>)? listJob;
   Function(String)? QR;
 
+String linkServer = 'http://uksw-blast-api.marikhsalatiga.com';
+String linkLocal = 'http://localhost:8080';
+
   void connectToSocket() async {
-    socket = IO.io('http://uksw-blast-api.marikhsalatiga.com/', <String, dynamic>{
+    socket = IO.io(linkLocal, <String, dynamic>{
       'transports': ['websocket'],
     });
 
