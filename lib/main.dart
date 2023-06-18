@@ -1,4 +1,4 @@
-import 'package:blast_whatsapp/home.dart';
+import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -21,6 +21,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passController = TextEditingController();
   late final AnimationController _controller;
   late final Animation<double> _animation;
   bool loading = true;
@@ -42,8 +44,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      socketProvider =
-          Provider.of<SocketProvider>(context, listen: false);
+      socketProvider = Provider.of<SocketProvider>(context, listen: false);
       socketProvider.connectToSocket();
 
       if (socketProvider.loading) {
@@ -134,8 +135,63 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
         ),
       );
     } else {
-      return const MaterialApp(
-        home: Scaffold(body: Text("Null")),
+      return MaterialApp(
+        home: Scaffold(
+            body: Center(
+          child: SizedBox(
+            height: 220,
+            width: 300,
+            child: Card(
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const Center(child: Text("Login")),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      TextField(
+                        minLines: 1,
+                        keyboardType: TextInputType.name,
+                        maxLines: null,
+                        textInputAction: TextInputAction.newline,
+                        controller: usernameController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                            labelText: 'Username'),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      TextField(
+                        minLines: 1,
+                        keyboardType: TextInputType.name,
+                        maxLines: null,
+                        textInputAction: TextInputAction.newline,
+                        controller: passController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                            labelText: 'Password'),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Align(
+                          alignment: Alignment.bottomRight,
+                          child: ElevatedButton(
+                              onPressed: null, child: Text("Login")))
+                    ],
+                  ),
+                )),
+          ),
+        )),
       );
     }
   }

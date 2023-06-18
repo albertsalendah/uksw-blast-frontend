@@ -19,6 +19,7 @@ class SocketProvider extends ChangeNotifier {
 
 String link = 'http://uksw-blast-api.marikhsalatiga.com';
 //String link = 'http://localhost:8080';
+//String link = 'http://192.168.137.1:8080/';
 
   void connectToSocket() async {
     socket = IO.io(link, <String, dynamic>{
@@ -91,7 +92,6 @@ String link = 'http://uksw-blast-api.marikhsalatiga.com';
           jobs.add(Job(id: jobId, progress: progress, status: status,sendto: sendto,message: message));
         }
         listJob?.call(jobs);
-      //});
     });
   }
 }

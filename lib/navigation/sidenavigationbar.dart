@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:blast_whatsapp/history.dart';
-import 'package:blast_whatsapp/home.dart';
-import 'package:blast_whatsapp/main.dart';
+import 'package:blast_whatsapp/pages/files_report.dart';
+import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SideNavigationBar extends StatelessWidget {
-  final List<String> navigationItems = ['Home', 'History', 'Logout'];
+  final List<String> navigationItems = ['Home', 'File Report', 'Logout'];
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +39,7 @@ Widget buildScreenByIndex(int index, BuildContext context) {
     case 0:
       return const Home();
     case 1:
-      return const History();
+      return const FileReport();
     case 2:
       Future<void> logout() async {
         String link = 'http://uksw-blast-api.marikhsalatiga.com/';
@@ -66,11 +65,6 @@ Widget buildScreenByIndex(int index, BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop();
               logout();
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => MyApp()),
-              //   (route) => false, // Clear the navigation stack
-              // );
             },
             child: const Text('Logout'),
           ),
