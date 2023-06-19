@@ -5,6 +5,7 @@ import 'package:blast_whatsapp/models/template_pesan.dart';
 import 'package:blast_whatsapp/screens/list_templates.dart';
 import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
+import 'package:blast_whatsapp/utils/link.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -22,6 +23,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final String link = Links().link;
   TextEditingController messageController = TextEditingController();
   TextEditingController kategoriPesan = TextEditingController();
   final TextEditingController _kategoriPesanController =
@@ -37,10 +39,6 @@ class _HomeState extends State<Home> {
   String selectedKodeProgdi = '';
   List<String> listProgdi = [];
   List<Template_Pesan> daftar_template = [];
-
-  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String link = 'http://localhost:8080/';
-  //String link = 'http://192.168.137.1:8080/';
 
   @override
   void initState() {
@@ -186,12 +184,7 @@ class _HomeState extends State<Home> {
     dataList.forEach((element) {
       listProgdi.add(element.namaProgdi);
     });
-
-    if (mounted) {
-      setState(() {
-        programDataList = dataList;
-      });
-    }
+    programDataList = dataList;
   }
 
   Future<void> fetchdaftarTemplate() async {
@@ -278,7 +271,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    loadProgramData();
+    setState(() {
+      loadProgramData();
+    });
     final activeJobs = jobs.where((job) => job.status != 'completed').toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
@@ -377,10 +372,12 @@ class _HomeState extends State<Home> {
                                 messageController.text.isNotEmpty) {
                               tambahTemplatePesan(
                                   kategoriPesan.text, messageController.text);
-                                  
-                                  NOTIF_SCREEN.show(context, "Success", "Template Pesan Berhasil Disimpan");
+
+                              NOTIF_SCREEN.show(context, "Success",
+                                  "Template Pesan Berhasil Disimpan");
                             } else {
-                              NOTIF_SCREEN.show(context, "Error", "Kategori Pesan dan Pesan Tidak Boleh Kosong");                           
+                              NOTIF_SCREEN.show(context, "Error",
+                                  "Kategori Pesan dan Pesan Tidak Boleh Kosong");
                             }
                           },
                           icon: Icon(Icons.add_comment, color: Colors.grey)),
@@ -389,7 +386,11 @@ class _HomeState extends State<Home> {
                           onPressed: () async {
                             await fetchdaftarTemplate();
                             setState(() {
-                              List_Templates().showdaftarTemplateAlertDialog(context, kategoriPesan, messageController, daftar_template);
+                              List_Templates().showdaftarTemplateAlertDialog(
+                                  context,
+                                  kategoriPesan,
+                                  messageController,
+                                  daftar_template);
                             });
                           },
                           icon: const Icon(Icons.list, color: Colors.grey)),

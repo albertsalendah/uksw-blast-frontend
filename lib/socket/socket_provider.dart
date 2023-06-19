@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../utils/link.dart';
+
 class SocketProvider extends ChangeNotifier {
   IO.Socket? socket;
   String qr = '';
@@ -17,9 +19,7 @@ class SocketProvider extends ChangeNotifier {
   Function(List<Job>)? listJob;
   Function(String)? QR;
 
-String link = 'http://uksw-blast-api.marikhsalatiga.com';
-//String link = 'http://localhost:8080';
-//String link = 'http://192.168.137.1:8080/';
+  final String link = Links().link;
 
   void connectToSocket() async {
     socket = IO.io(link, <String, dynamic>{
@@ -68,33 +68,39 @@ String link = 'http://uksw-blast-api.marikhsalatiga.com';
 
     socket?.on('job', (data) {
       //setState(() {
-        final jobId = data['jobId'];
-        final progress = data['progress'];
-        final status = data['status'];
-        final sendto = data['sendto'];
-        final message = data['message'];
+      final jobId = data['jobId'];
+      final progress = data['progress'];
+      final status = data['status'];
+      final sendto = data['sendto'];
+      final message = data['message'];
 
-        Job? existingJob;
-        for (final job in jobs) {
-          if (job.id == jobId) {
-            existingJob = job;
-            break;
-          }
+      Job? existingJob;
+      for (final job in jobs) {
+        if (job.id == jobId) {
+          existingJob = job;
+          break;
         }
+      }
 
-        if (existingJob != null) {
-          // Update the existing job's progress and status
-          existingJob.progress = progress;
-          existingJob.status = status;
-          existingJob.message = message;
-        } else {
-          // Add the new job to the list
-          jobs.add(Job(id: jobId, progress: progress, status: status,sendto: sendto,message: message));
-        }
-        listJob?.call(jobs);
+      if (existingJob != null) {
+        // Update the existing job's progress and status
+        existingJob.progress = progress;
+        existingJob.status = status;
+        existingJob.message = message;
+      } else {
+        // Add the new job to the list
+        jobs.add(Job(
+            id: jobId,
+            progress: progress,
+            status: status,
+            sendto: sendto,
+            message: message));
+      }
+      listJob?.call(jobs);
     });
   }
 }
+
 class Job {
   final String id;
   int progress;
@@ -102,5 +108,10 @@ class Job {
   String sendto;
   String message;
 
-  Job({required this.id, this.progress = 0, this.status = 'processing',this.sendto='',this.message=""});
+  Job(
+      {required this.id,
+      this.progress = 0,
+      this.status = 'processing',
+      this.sendto = '',
+      this.message = ""});
 }

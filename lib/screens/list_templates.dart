@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/template_pesan.dart';
+import '../utils/link.dart';
 
 class List_Templates {
-  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String link = 'http://localhost:8080/';
+  final String link = Links().link;
   List<Template_Pesan> daftar_template = [];
   final TextEditingController _kategoriPesanController =
       TextEditingController();

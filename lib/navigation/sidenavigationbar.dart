@@ -5,6 +5,8 @@ import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/link.dart';
+
 class SideNavigationBar extends StatelessWidget {
   final List<String> navigationItems = ['Home', 'File Report', 'Logout'];
 
@@ -42,8 +44,7 @@ Widget buildScreenByIndex(int index, BuildContext context) {
       return const FileReport();
     case 2:
       Future<void> logout() async {
-        String link = 'http://uksw-blast-api.marikhsalatiga.com/';
-        //String link = 'http://localhost:8080/';
+        final String link = Links().link;
         try {
           final historyResponse =
               await http.get(Uri.parse('${link}logout'));

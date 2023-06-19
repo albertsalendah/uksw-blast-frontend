@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:blast_whatsapp/pages/home.dart';
+import 'package:blast_whatsapp/screens/notif_screen.dart';
+import 'package:blast_whatsapp/utils/link.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'socket/socket_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: "assets/.env");
   runApp(
     ChangeNotifierProvider(
       create: (_) => SocketProvider(),
@@ -21,6 +28,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
+  String link = Links().link;
   TextEditingController usernameController = TextEditingController();
   TextEditingController passController = TextEditingController();
   late final AnimationController _controller;
@@ -30,6 +38,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   bool showQR = false;
   String qr = '';
   late SocketProvider socketProvider;
+  bool loginStatus = false;
 
   @override
   void initState() {
@@ -59,6 +68,31 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     socketProvider.updateMainMenu = handleMainMenu;
     socketProvider.updateQR = handleQR;
     socketProvider.QR = handleQRCode;
+  }
+
+  Future<void> login() async {
+    final url = Uri.parse('${link}login');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(
+        {
+          'username': usernameController.text,
+          'password': passController.text,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      //final token = jsonDecode(response.body)['token'];
+      // Do something with the token
+      loginStatus = true;
+      //print('Token: $token');
+    } else {
+      //final message = jsonDecode(response.body)['message'];
+      //print('Login failed: $message');
+      loginStatus = false;
+    }
   }
 
   void handleQRCode(String message) {
@@ -107,33 +141,41 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return MaterialApp(home: Scaffold(body: Center(child: logo())));
-    } else if (showQR) {
-      return MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: Visibility(
-              visible: showQR,
-              child: SizedBox(
-                height: 250,
-                width: 250,
-                child: QrImageView(
-                  data: qr,
-                  version: QrVersions.auto,
-                  size: 200.0,
+    if (loginStatus) {
+      if (loading) {
+        return MaterialApp(home: Scaffold(body: Center(child: logo())));
+      } else if (showQR) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: Visibility(
+                visible: showQR,
+                child: SizedBox(
+                  height: 250,
+                  width: 250,
+                  child: QrImageView(
+                    data: qr,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-    } else if (mainmenuV) {
-      return const MaterialApp(
-        home: Scaffold(
-          body: Home(),
-        ),
-      );
+        );
+      } else if (mainmenuV) {
+        return const MaterialApp(
+          home: Scaffold(
+            body: Home(),
+          ),
+        );
+      } else {
+        return const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(),
+          ),
+        );
+      }
     } else {
       return MaterialApp(
         home: Scaffold(
@@ -183,10 +225,13 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                       const SizedBox(
                         height: 8,
                       ),
-                      const Align(
+                      Align(
                           alignment: Alignment.bottomRight,
                           child: ElevatedButton(
-                              onPressed: null, child: Text("Login")))
+                              onPressed: () async {
+                                await login();
+                              },
+                              child: Text("Login")))
                     ],
                   ),
                 )),

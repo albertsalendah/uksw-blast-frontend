@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../navigation/sidenavigationbar.dart';
+import '../utils/link.dart';
 
 class FileReport extends StatefulWidget {
   const FileReport({super.key});
@@ -14,8 +15,7 @@ class FileReport extends StatefulWidget {
 
 class _FileReportState extends State<FileReport> {
   List<String> files = [];
-  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String link = 'http://localhost:8080/';
+  final String link = Links().link;
 
   @override
   void initState() {
