@@ -69,8 +69,8 @@ Widget buildScreenByIndex(int index, BuildContext context) {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await SessionManager.logout();
               logout();
+              await SessionManager.logout();             
             },
             child: const Text('Logout'),
           ),

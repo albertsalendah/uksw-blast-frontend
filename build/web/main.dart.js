@@ -50600,10 +50600,10 @@ A.azE.prototype={
 $0(){var s=0,r=A.W(t.H),q=this
 var $async$$0=A.S(function(a,b){if(a===1)return A.T(b,r)
 while(true)switch(s){case 0:A.dj(q.a,!1).d7(0)
+q.b.$0()
 s=2
 return A.N(A.pE(),$async$$0)
-case 2:q.b.$0()
-return A.U(null,r)}})
+case 2:return A.U(null,r)}})
 return A.V($async$$0,r)},
 $S:13}
 A.azF.prototype={

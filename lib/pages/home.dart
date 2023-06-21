@@ -61,7 +61,8 @@ class _HomeState extends State<Home> {
   }
 
   void startSessionTimer() {
-    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration), (timer) async {
+    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration),
+        (timer) async {
       final isSessionExpired = await SessionManager.isSessionExpired();
       if (isSessionExpired) {
         await SessionManager.logout();
@@ -661,6 +662,7 @@ class _HomeState extends State<Home> {
                                       onPressed: () {
                                         deleteTemplatePesan(
                                             daftar_template[index].id);
+                                        // ignore: use_build_context_synchronously
                                         Navigator.of(context).pop();
                                       },
                                     ),
