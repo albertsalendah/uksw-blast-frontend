@@ -1,10 +1,14 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
+import 'package:blast_whatsapp/main.dart';
 import 'package:blast_whatsapp/pages/files_report.dart';
 import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/SessionManager.dart';
 import '../utils/link.dart';
 
 class SideNavigationBar extends StatelessWidget {
@@ -49,29 +53,29 @@ Widget buildScreenByIndex(int index, BuildContext context) {
           final historyResponse =
               await http.get(Uri.parse('${link}logout'));
           if (historyResponse.statusCode == 200) {
-            dynamic Data = jsonDecode(historyResponse.body);
-            print(Data);
+            dynamic data = jsonDecode(historyResponse.body);
+            print(data);
           } else {
             print('Failed to send data. Error: ${historyResponse.statusCode}');
           }
         } catch (e) {
-          print(e);
+          print("Error Logout $e");
         }
       }
       return AlertDialog(
-        title: Text('Logout'),
-        content: Text('Are you sure you want to logout?'),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
+              await SessionManager.logout();
               logout();
             },
             child: const Text('Logout'),
           ),
           TextButton(
             onPressed: () {
-              // Close the dialog
               Navigator.of(context).pop();
             },
             child: const Text('Cancel'),

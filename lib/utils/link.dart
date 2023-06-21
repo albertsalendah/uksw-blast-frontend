@@ -1,4 +1,5 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:blast_whatsapp/utils/config.dart';
+
 class Links {
   static final Links _instance = Links._internal();
 
@@ -8,5 +9,5 @@ class Links {
 
   Links._internal();
 
-  String link = dotenv.env['LOCAL_LINK'].toString();
+  String link = Config.LINK;
 }

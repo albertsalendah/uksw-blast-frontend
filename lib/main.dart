@@ -1,27 +1,31 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:blast_whatsapp/pages/home.dart';
-import 'package:blast_whatsapp/screens/notif_screen.dart';
+import 'package:blast_whatsapp/utils/SessionManager.dart';
 import 'package:blast_whatsapp/utils/link.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'socket/socket_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main() async {
-  await dotenv.load(fileName: "assets/.env");
+  WidgetsFlutterBinding.ensureInitialized();
+  final isLoggedIn = await SessionManager.isUserLoggedIn();
+  final isSessionExpired = await SessionManager.isSessionExpired();
   runApp(
     ChangeNotifierProvider(
       create: (_) => SocketProvider(),
-      child: const MyApp(),
+      child: MyApp(isLoggedIn: isLoggedIn && !isSessionExpired),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -38,7 +42,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   bool showQR = false;
   String qr = '';
   late SocketProvider socketProvider;
-  bool loginStatus = false;
+  String logs = '';
 
   @override
   void initState() {
@@ -68,6 +72,10 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     socketProvider.updateMainMenu = handleMainMenu;
     socketProvider.updateQR = handleQR;
     socketProvider.QR = handleQRCode;
+    socketProvider.messages = handleLog;
+    // Future.delayed(const Duration(seconds: 5), () {
+    //   setState(() {});
+    // });
   }
 
   Future<void> login() async {
@@ -84,15 +92,20 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     );
 
     if (response.statusCode == 200) {
-      //final token = jsonDecode(response.body)['token'];
+      final token = jsonDecode(response.body)['token'];
       // Do something with the token
-      loginStatus = true;
-      //print('Token: $token');
+      await SessionManager.saveToken(token);
+      window.location.reload();
     } else {
-      //final message = jsonDecode(response.body)['message'];
-      //print('Login failed: $message');
-      loginStatus = false;
+      final message = jsonDecode(response.body)['message'];
+      print('Login failed: $message');
     }
+  }
+
+  void handleLog(String log) {
+    setState(() {
+      logs = log;
+    });
   }
 
   void handleQRCode(String message) {
@@ -106,7 +119,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       loading = message;
     });
 
-    if (message) {
+    if (loading) {
       _controller.repeat();
     } else {
       _controller.stop();
@@ -141,9 +154,22 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (loginStatus) {
+    final isLoggedIn = widget.isLoggedIn;
+    if (isLoggedIn) {
       if (loading) {
-        return MaterialApp(home: Scaffold(body: Center(child: logo())));
+        return MaterialApp(
+            home: Scaffold(
+                body: Center(
+                    child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            logo(),
+            const SizedBox(
+              height: 16,
+            ),
+            Text(logs)
+          ],
+        ))));
       } else if (showQR) {
         return MaterialApp(
           home: Scaffold(
@@ -169,6 +195,19 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             body: Home(),
           ),
         );
+        // return FutureBuilder(
+        //   future: Future.delayed(const Duration(seconds: 5)),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState == ConnectionState.waiting) {
+        //       _controller.repeat();
+        //       return logo();
+        //     } else {
+        //       _controller.stop();
+        //       _controller.dispose();
+
+        //     }
+        //   },
+        // );
       } else {
         return const MaterialApp(
           home: Scaffold(
@@ -211,7 +250,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                       ),
                       TextField(
                         minLines: 1,
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.visiblePassword,
                         maxLines: null,
                         textInputAction: TextInputAction.newline,
                         controller: passController,
@@ -231,7 +270,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                               onPressed: () async {
                                 await login();
                               },
-                              child: Text("Login")))
+                              child: const Text("Login")))
                     ],
                   ),
                 )),

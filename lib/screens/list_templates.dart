@@ -66,15 +66,14 @@ class List_Templates {
                 itemCount: daftar_template.length,
                 itemBuilder: (ctx, index) => ListTile(
                   title: InkWell(
-                    child: Text(daftar_template[index].kategoriPesan),
-                    onTap: () {
-                      kategoriPesan.text = daftar_template[index].kategoriPesan;
-                      messageController.text = daftar_template[index].isiPesan;
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  subtitle: InkWell(
-                    child: Text(daftar_template[index].isiPesan),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(daftar_template[index].kategoriPesan),
+                        SizedBox(height: 8,),
+                        Text(daftar_template[index].isiPesan),
+                      ],
+                    ),
                     onTap: () {
                       kategoriPesan.text = daftar_template[index].kategoriPesan;
                       messageController.text = daftar_template[index].isiPesan;
@@ -102,7 +101,7 @@ class List_Templates {
                             Navigator.of(context).pop();
                             //await fetchdaftarTemplate;
                             // setState(() {
-                              
+
                             //   showdaftarTemplateAlertDialog(
                             //       context,
                             //       kategoriPesan,

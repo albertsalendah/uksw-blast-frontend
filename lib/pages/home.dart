@@ -15,6 +15,9 @@ import 'package:provider/provider.dart';
 import '../navigation/sidenavigationbar.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/SessionManager.dart';
+import '../utils/config.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -39,20 +42,32 @@ class _HomeState extends State<Home> {
   String selectedKodeProgdi = '';
   List<String> listProgdi = [];
   List<Template_Pesan> daftar_template = [];
+  Timer? _timer;
 
   @override
   void initState() {
     socketProvider = Provider.of<SocketProvider>(context, listen: false);
     socketProvider.listJob = handleJobs;
-    //loadProgramData();
+    startSessionTimer();
     super.initState();
   }
 
   @override
   void dispose() {
-    //socketProvider = Provider.of<SocketProvider>(context, listen: false);
-    //socketProvider.socket?.disconnect();
+    _timer?.cancel();
+    // socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    // socketProvider.socket?.dispose();
     super.dispose();
+  }
+
+  void startSessionTimer() {
+    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration), (timer) async {
+      final isSessionExpired = await SessionManager.isSessionExpired();
+      if (isSessionExpired) {
+        await SessionManager.logout();
+        setState(() {});
+      }
+    });
   }
 
   void handleJobs(List<Job> job) {
@@ -210,7 +225,8 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void tambahTemplatePesan(String kategoriPesan, String isiPesan) async {
+  Future<bool> tambahTemplatePesan(
+      String kategoriPesan, String isiPesan) async {
     final url = '${link}tambah_template_pesan';
 
     final response = await http.post(
@@ -224,50 +240,57 @@ class _HomeState extends State<Home> {
     if (response.statusCode == 200) {
       // Data added successfully
       print('Data added to MongoDB');
+      return true;
     } else {
       // Error adding data
       print('Failed to add data to MongoDB');
+      return false;
     }
   }
 
-  // Future<void> deleteTemplatePesan(String messageId) async {
-  //   final url = '${link}delete_template_pesan/$messageId';
+  Future<void> deleteTemplatePesan(String messageId) async {
+    final url = '${link}delete_template_pesan/$messageId';
 
-  //   final response = await http.delete(Uri.parse(url));
+    final response = await http.delete(Uri.parse(url));
 
-  //   if (response.statusCode == 200) {
-  //     // Data deleted successfully
-  //     print('Data deleted from MongoDB');
-  //     fetchdaftarTemplate(); // Refresh the message list
-  //   } else {
-  //     // Error deleting data
-  //     print('Failed to delete data from MongoDB');
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      // Data deleted successfully
+      print('Data deleted from MongoDB');
+      setState(() {
+        fetchdaftarTemplate();
+        showdaftarTemplateAlertDialog();
+      });
+    } else {
+      // Error deleting data
+      print('Failed to delete data from MongoDB');
+    }
+  }
 
-  // Future<void> _updateTemplatePesan(String id) async {
-  //   final String kategoriPesan = _kategoriPesanController.text;
-  //   final String isiPesan = _isiPesanController.text;
+  Future<void> _updateTemplatePesan(String id) async {
+    final String kategoriPesan = _kategoriPesanController.text;
+    final String isiPesan = _isiPesanController.text;
 
-  //   // Send the update request to the backend API
-  //   final response = await http.put(
-  //     Uri.parse('${link}edit_template_pesan/${id}'),
-  //     body: {
-  //       'kategori_pesan': kategoriPesan,
-  //       'isi_pesan': isiPesan,
-  //     },
-  //   );
+    // Send the update request to the backend API
+    final response = await http.put(
+      Uri.parse('${link}edit_template_pesan/${id}'),
+      body: {
+        'kategori_pesan': kategoriPesan,
+        'isi_pesan': isiPesan,
+      },
+    );
 
-  //   if (response.statusCode == 200) {
-  //     // Data updated successfully
-  //     // You can handle the success case based on your requirements
-  //     Navigator.of(context).pop();
-  //   } else {
-  //     // Update failed
-  //     // You can handle the error case based on your requirements
-  //     print('Update failed: ${response.statusCode}');
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+      setState(() {
+        fetchdaftarTemplate();
+        showdaftarTemplateAlertDialog();
+      });
+    } else {
+      // Update failed
+      // You can handle the error case based on your requirements
+      print('Update failed: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -345,7 +368,7 @@ class _HomeState extends State<Home> {
                         contentPadding: EdgeInsets.all(10),
                         labelText: 'Kategori Pesan'),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -367,31 +390,31 @@ class _HomeState extends State<Home> {
                       ),
                       //const SizedBox(width: 8,),
                       IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (kategoriPesan.text.isNotEmpty &&
                                 messageController.text.isNotEmpty) {
-                              tambahTemplatePesan(
-                                  kategoriPesan.text, messageController.text);
-
-                              NOTIF_SCREEN.show(context, "Success",
-                                  "Template Pesan Berhasil Disimpan");
+                              if (await tambahTemplatePesan(
+                                  kategoriPesan.text, messageController.text)) {
+                                // ignore: use_build_context_synchronously
+                                NOTIF_SCREEN.show(context, "Success",
+                                    "Template Pesan Berhasil Disimpan");
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                NOTIF_SCREEN.show(context, "Failed",
+                                    "Template Pesan Gagal Disimpan");
+                              }
                             } else {
                               NOTIF_SCREEN.show(context, "Error",
                                   "Kategori Pesan dan Pesan Tidak Boleh Kosong");
                             }
                           },
-                          icon: Icon(Icons.add_comment, color: Colors.grey)),
+                          icon: const Icon(Icons.add_comment,
+                              color: Colors.grey)),
                       //const SizedBox(width: 8,),
                       IconButton(
                           onPressed: () async {
                             await fetchdaftarTemplate();
-                            setState(() {
-                              List_Templates().showdaftarTemplateAlertDialog(
-                                  context,
-                                  kategoriPesan,
-                                  messageController,
-                                  daftar_template);
-                            });
+                            showdaftarTemplateAlertDialog();
                           },
                           icon: const Icon(Icons.list, color: Colors.grey)),
                     ],
@@ -527,7 +550,7 @@ class _HomeState extends State<Home> {
                           )
                           .toList(),
                     ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                 ],
@@ -578,137 +601,153 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // showdaftarTemplateAlertDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Daftar Template Pesan'),
-  //         content: SizedBox(
-  //           width: double.maxFinite,
-  //           child: ListView.builder(
-  //             itemCount: daftar_template.length,
-  //             itemBuilder: (ctx, index) => ListTile(
-  //               title: InkWell(
-  //                 child: Text(daftar_template[index].kategoriPesan),
-  //                 onTap: () {
-  //                   kategoriPesan.text = daftar_template[index].kategoriPesan;
-  //                   messageController.text = daftar_template[index].isiPesan;
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               subtitle: InkWell(
-  //                 child: Text(daftar_template[index].isiPesan),
-  //                 onTap: () {
-  //                   kategoriPesan.text = daftar_template[index].kategoriPesan;
-  //                   messageController.text = daftar_template[index].isiPesan;
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               trailing: SizedBox(
-  //                 width: 100,
-  //                 child: Row(
-  //                   children: [
-  //                     IconButton(
-  //                         onPressed: () {
-  //                           final updatedItem = daftar_template[index];
-  //                           _showUpdateDialog(updatedItem);
-  //                         },
-  //                         icon: const Icon(Icons.edit)),
-  //                     const SizedBox(
-  //                       width: 8,
-  //                     ),
-  //                     IconButton(
-  //                       icon: const Icon(Icons.delete),
-  //                       onPressed: () async {
-  //                         await deleteTemplatePesan(daftar_template[index].id);
-  //                         Navigator.of(context).pop();
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: const Text('Kembali'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void showdaftarTemplateAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        if (daftar_template.isEmpty) {
+          return const AlertDialog(
+            title: Text('Daftar Template Pesan'),
+            content: Text('Loading...'), // Display a loading indicator
+          );
+        } else {
+          return StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                    title: const Text('Daftar Template Pesan'),
+                    content: SizedBox(
+                      width: double.maxFinite,
+                      child: ListView.builder(
+                          itemCount: daftar_template.length,
+                          itemBuilder: (ctx, index) {
+                            if (index >= daftar_template.length) {
+                              return null; // Return null for indices out of range
+                            }
+                            return ListTile(
+                              title: InkWell(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(daftar_template[index].kategoriPesan),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(daftar_template[index].isiPesan),
+                                  ],
+                                ),
+                                onTap: () {
+                                  kategoriPesan.text =
+                                      daftar_template[index].kategoriPesan;
+                                  messageController.text =
+                                      daftar_template[index].isiPesan;
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              trailing: SizedBox(
+                                width: 100,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          final updatedItem =
+                                              daftar_template[index];
+                                          _showUpdateDialog(updatedItem);
+                                        },
+                                        icon: const Icon(Icons.edit)),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        deleteTemplatePesan(
+                                            daftar_template[index].id);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Kembali'),
+                      ),
+                    ],
+                  ));
+        }
+      },
+    );
+  }
 
-  // void _showUpdateDialog(Template_Pesan currentItem) {
-  //   _kategoriPesanController.text = currentItem.kategoriPesan;
-  //   _isiPesanController.text = currentItem.isiPesan;
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: Text('Update Item'),
-  //         content: SizedBox(
-  //           width: double.maxFinite,
-  //           child: Column(
-  //             children: [
-  //               TextField(
-  //                 controller: _kategoriPesanController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Kategori Pesan',
-  //                   border: OutlineInputBorder(
-  //                     borderSide: BorderSide(),
-  //                   ),
-  //                 ),
-  //               ),
-  //               const SizedBox(
-  //                 height: 16,
-  //               ),
-  //               TextField(
-  //                 minLines: 1,
-  //                 keyboardType: TextInputType.multiline,
-  //                 maxLines: null,
-  //                 textInputAction: TextInputAction.newline,
-  //                 controller: _isiPesanController,
-  //                 decoration: const InputDecoration(
-  //                     border: OutlineInputBorder(
-  //                       borderSide: BorderSide(),
-  //                     ),
-  //                     contentPadding: EdgeInsets.all(10),
-  //                     labelText: 'Isi Pesan'),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               setState(() {
-  //                 _updateTemplatePesan(currentItem.id);
-  //                 fetchdaftarTemplate();
-  //               });
-  //               Navigator.of(context).pop();
-  //               setState(() {
-  //                 showdaftarTemplateAlertDialog(context);
-  //               });
-  //             },
-  //             child: Text('Save'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text('Cancel'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showUpdateDialog(Template_Pesan currentItem) {
+    _kategoriPesanController.text = currentItem.kategoriPesan;
+    _isiPesanController.text = currentItem.isiPesan;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text('Update Item'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _kategoriPesanController,
+                    decoration: const InputDecoration(
+                      labelText: 'Kategori Pesan',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextField(
+                    minLines: 1,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    textInputAction: TextInputAction.newline,
+                    controller: _isiPesanController,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                        ),
+                        contentPadding: EdgeInsets.all(10),
+                        labelText: 'Isi Pesan'),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _updateTemplatePesan(currentItem.id);
+                  });
+                  Navigator.of(context).pop();
+                  setState(() {});
+                },
+                child: Text('Save'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 void popUp(BuildContext context, String text) {
