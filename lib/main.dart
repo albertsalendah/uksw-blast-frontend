@@ -12,20 +12,22 @@ import 'socket/socket_provider.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final isLoggedIn = await SessionManager.isUserLoggedIn();
-  final isSessionExpired = await SessionManager.isSessionExpired();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final isLoggedIn = await SessionManager.isUserLoggedIn();
+  // final isSessionExpired = await SessionManager.isSessionExpired();
+  // isLoggedIn: isLoggedIn && !isSessionExpired
   runApp(
     ChangeNotifierProvider(
       create: (_) => SocketProvider(),
-      child: MyApp(isLoggedIn: isLoggedIn && !isSessionExpired),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  final bool isLoggedIn;
-  const MyApp({super.key, required this.isLoggedIn});
+  // final bool isLoggedIn;
+  // , required this.isLoggedIn
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -43,6 +45,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   String qr = '';
   late SocketProvider socketProvider;
   String logs = '';
+  bool isLoggedIn = false;//widget.isLoggedIn;
 
   @override
   void initState() {
@@ -95,7 +98,8 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       final token = jsonDecode(response.body)['token'];
       // Do something with the token
       await SessionManager.saveToken(token);
-      window.location.reload();
+      isLoggedIn = true;
+      //window.location.reload();
     } else {
       final message = jsonDecode(response.body)['message'];
       print('Login failed: $message');
@@ -154,7 +158,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = widget.isLoggedIn;
+    
     if (isLoggedIn) {
       if (loading) {
         return MaterialApp(

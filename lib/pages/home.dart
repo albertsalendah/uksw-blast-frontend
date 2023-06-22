@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:blast_whatsapp/models/progdi_models.dart';
 import 'package:blast_whatsapp/models/template_pesan.dart';
-import 'package:blast_whatsapp/screens/list_templates.dart';
 import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
 import 'package:blast_whatsapp/utils/link.dart';

@@ -1,8 +1,5 @@
 // ignore_for_file: avoid_print
-
 import 'dart:convert';
-
-import 'package:blast_whatsapp/main.dart';
 import 'package:blast_whatsapp/pages/files_report.dart';
 import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
