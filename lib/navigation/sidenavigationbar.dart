@@ -44,11 +44,11 @@ Widget buildScreenByIndex(int index, BuildContext context) {
     case 1:
       return const FileReport();
     case 2:
+      bool logs = false;
       Future<void> logout() async {
         final String link = Links().link;
         try {
-          final historyResponse =
-              await http.get(Uri.parse('${link}logout'));
+          final historyResponse = await http.get(Uri.parse('${link}logout'));
           if (historyResponse.statusCode == 200) {
             dynamic data = jsonDecode(historyResponse.body);
             print(data);
@@ -59,25 +59,55 @@ Widget buildScreenByIndex(int index, BuildContext context) {
           print("Error Logout $e");
         }
       }
-      return AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              logout();
-              await SessionManager.logout();             
-            },
-            child: const Text('Logout'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-        ],
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Logout'),
+            content: Wrap(
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: logs,
+                          onChanged: (value) {
+                            setState(
+                              () {
+                                logs = !logs;
+                              },
+                            );
+                          },
+                        ),
+                        const Text("Centang Untuk Logout Whatsapp"),
+                      ],
+                    ),
+                    const Text('Are you sure you want to logout?'),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  if (logs) {
+                    print(logs);
+                    await logout();
+                  }
+                  await SessionManager.logout();
+                },
+                child: const Text('Logout'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
       );
     default:
       return const Home();
