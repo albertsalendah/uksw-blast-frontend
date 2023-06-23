@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../navigation/sidenavigationbar.dart';
-
+import '../screens/table_hisory_pesan.dart';
+import '../utils/link.dart';
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -15,74 +16,53 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  List<history_models> listHistory = [];
+  List<String> listHistory = [];
   String? sortColumn;
   bool isAscending = true;
-  String link = 'http://uksw-blast-api.marikhsalatiga.com/';
-  //String link = 'http://localhost:8080/';
-  //String link = 'http://192.168.137.1:8080/';
+  String link = Links().link;
+  List<history_models> listpesan = [];
+
+  Future<void> getlistpesan(String idPesan) async {
+    var request =
+        http.Request('GET', Uri.parse('${link}getlistpesan/$idPesan'));
+    request.body = '''''';
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String responseString = await response.stream.bytesToString();
+      List<dynamic> parsedData = json.decode(responseString);
+      setState(() {
+        listpesan =
+            parsedData.map((item) => history_models.fromJson(item)).toList();
+      });
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
   Future<void> fetchData() async {
     try {
-      final historyResponse = await http
-          .get(Uri.parse('${link}history'));
+      final historyResponse = await http.get(Uri.parse('${link}history'));
       if (historyResponse.statusCode == 200) {
         setState(() {
           List<dynamic> data = jsonDecode(historyResponse.body);
-          listHistory =
-              data.map((json) => history_models.fromJson(json)).toList();
+          listHistory = List<String>.from(data);
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
-        fetchData();
+        //fetchData();
       }
     } catch (e) {
       print(e);
-      fetchData();
+      //fetchData();
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
+    fetchData();
     super.initState();
-  }
-
-  void sortData(String column) {
-    setState(() {
-      if (sortColumn == column) {
-        // Reverse the sort order if the same column is selected again
-        isAscending = !isAscending;
-      } else {
-        // Set the new sort column and order
-        sortColumn = column;
-        isAscending = true;
-      }
-
-      // Sort the list based on the selected column and order
-      switch (sortColumn) {
-        case 'tanggal':
-          listHistory
-              .sort((a, b) => (a.tanggal ?? '').compareTo(b.tanggal ?? ''));
-          break;
-        case 'tahun_ajaran':
-          listHistory.sort(
-              (a, b) => (a.tahun_ajaran ?? '').compareTo(b.tahun_ajaran ?? ''));
-          break;
-        case 'progdi':
-          listHistory
-              .sort((a, b) => (a.progdi ?? '').compareTo(b.progdi ?? ''));
-          break;
-        case 'status_registrasi':
-          listHistory.sort((a, b) =>
-              (a.status_registrasi ?? '').compareTo(b.status_registrasi ?? ''));
-          break;
-      }
-
-      // Reverse the list order if it's in descending order
-      if (!isAscending) {
-        listHistory = listHistory.reversed.toList();
-      }
-    });
   }
 
   @override
@@ -92,72 +72,48 @@ class _HistoryState extends State<History> {
       drawer: SideNavigationBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RefreshIndicator(
-          onRefresh: fetchData,
-          child: ListView(
-            children: [
-              DataTable(
-                columns: [
-                  DataColumn(
-                    label: Text('Tanggal', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('tanggal'),
-                  ),
-                  DataColumn(
-                    label: Text('No Pendaftaran', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('no_pendaftaran'),
-                  ),
-                  DataColumn(
-                    label: Text('Nama', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('nama'),
-                  ),
-                  DataColumn(
-                    label: Text('Tahun Ajaran', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('tahun_ajaran'),
-                  ),
-                  DataColumn(
-                    label: Text('Progdi', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('progdi'),
-                  ),
-                  DataColumn(
-                    label: Text('Pesan', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('pesan'),
-                  ),
-                  DataColumn(
-                    label: Text('Status Registrasi', maxLines: 1),
-                    onSort: (columnIndex, _) => sortData('status_registrasi'),
-                  ),
-                ],
-                rows: listHistory
-                    .map(
-                      (history) => DataRow(
-                        cells: [
-                          DataCell(Text(
-                            history.tanggal ?? '',
-                            maxLines: 1,
-                          )),
-                          DataCell(
-                              Text(history.no_pendaftaran ?? '', maxLines: 1)),
-                          DataCell(Text(history.nama ?? '', maxLines: 1)),
-                          DataCell(
-                              Text(history.tahun_ajaran ?? '', maxLines: 1)),
-                          DataCell(Text(history.progdi ?? '', maxLines: 1)),
-                          DataCell(Text(history.pesan ?? '', maxLines: 1)),
-                          DataCell(Text(history.status_registrasi ?? '',
-                              maxLines: 1)),
-                        ],
-                      ),
-                    )
-                    .toList(),
+        child: Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: RefreshIndicator(
+                  onRefresh: fetchData,
+                  child: ListView.builder(
+                      itemCount: listHistory.length,
+                      itemBuilder: (ctx, index) {
+                        if (index >= listHistory.length) {
+                          return null; // Return null for indices out of range
+                        }
+                        return ListTile(
+                          title: InkWell(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(listHistory[index]),
+                              ],
+                            ),
+                            onTap: () async {
+                              await getlistpesan(listHistory[index]);
+                              setState(() {});
+                            },
+                          ),
+                        );
+                      })),
+            ),
+            Flexible(
+              flex: 2,
+              child: Visibility(
+                visible: listpesan.isNotEmpty,
+                child: listpesan.length > 1
+                    ? SingleChildScrollView(
+                        child: DataTablePesan(listPesan: listpesan),
+                      )
+                    : DataTablePesan(listPesan: listpesan),
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchData,
-        child: Icon(Icons.refresh),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

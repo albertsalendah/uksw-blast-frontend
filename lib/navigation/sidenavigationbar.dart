@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
 import 'package:blast_whatsapp/pages/files_report.dart';
+import 'package:blast_whatsapp/pages/history.dart';
 import 'package:blast_whatsapp/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,7 @@ import '../utils/SessionManager.dart';
 import '../utils/link.dart';
 
 class SideNavigationBar extends StatelessWidget {
-  final List<String> navigationItems = ['Home', 'File Report', 'Logout'];
+  final List<String> navigationItems = ['Home', 'File Report','History','Logout'];
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,8 @@ Widget buildScreenByIndex(int index, BuildContext context) {
     case 1:
       return const FileReport();
     case 2:
+      return const History();
+    case 3:
       bool logs = false;
       Future<void> logout() async {
         final String link = Links().link;

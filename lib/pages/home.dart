@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../navigation/sidenavigationbar.dart';
 import 'package:http/http.dart' as http;
 
+import '../screens/tabel_tamplate_pesan.dart';
 import '../utils/SessionManager.dart';
 import '../utils/config.dart';
 
@@ -415,6 +416,16 @@ class _HomeState extends State<Home> {
                           onPressed: () async {
                             await fetchdaftarTemplate();
                             showdaftarTemplateAlertDialog();
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (context) {
+                            //     return DataTableTemplatePesan(
+                            //         //daftar_template: daftar_template,
+                            //         kategoriPesanController:
+                            //             _kategoriPesanController,
+                            //         isiPesanController: _isiPesanController);
+                            //   },
+                            // );
                           },
                           icon: const Icon(Icons.list, color: Colors.grey)),
                     ],
