@@ -73,6 +73,7 @@ class _HistoryState extends State<History> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Flexible(
               flex: 1,

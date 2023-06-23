@@ -8,11 +8,9 @@ import '../utils/link.dart';
 
 class DataTableTemplatePesan extends StatefulWidget {
   final TextEditingController kategoriPesanController;
-
   final TextEditingController isiPesanController;
   const DataTableTemplatePesan(
       {super.key,
-      //required this.daftar_template,
       required this.kategoriPesanController,
       required this.isiPesanController});
 
@@ -25,7 +23,8 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
   final int rowsPerPage = 10;
   int currentPage = 0;
   final String link = Links().link;
-  //List<Template_Pesan> daftar_template = [];
+  final TextEditingController editKategoriPesan = TextEditingController();
+  final TextEditingController editIsiPesan = TextEditingController();
 
   List<Template_Pesan> paginatedList = [];
 
@@ -73,6 +72,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
           .toList();
       setState(() {
         daftar_template = fetchedMessages;
+        paginateList();
       });
     } else {
       // Error fetching data
@@ -88,7 +88,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     if (response.statusCode == 200) {
       // Data deleted successfully
       print('Data deleted from MongoDB');
-      setState(() {});
+      fetchdaftarTemplate();
     } else {
       // Error deleting data
       print('Failed to delete data from MongoDB');
@@ -96,8 +96,8 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
   }
 
   Future<void> _updateTemplatePesan(String id) async {
-    final String kategoriPesan = widget.kategoriPesanController.text;
-    final String isiPesan = widget.isiPesanController.text;
+    final String kategoriPesan = editKategoriPesan.text;
+    final String isiPesan = editIsiPesan.text;
 
     // Send the update request to the backend API
     final response = await http.put(
@@ -109,11 +109,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     );
 
     if (response.statusCode == 200) {
-      Navigator.of(context).pop();
-      setState(() {
-        //fetchdaftarTemplate();
-        //showdaftarTemplateAlertDialog();
-      });
+      fetchdaftarTemplate();
     } else {
       // Update failed
       // You can handle the error case based on your requirements
@@ -123,139 +119,208 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
 
   @override
   Widget build(BuildContext context) {
-     if (daftar_template.isEmpty) {
-    // Show a loading indicator or a message while waiting for data
-    return AlertDialog(
-      title: const Text('Daftar Template Pesan'),
-      content: const Text('Loading...'),
-    );
-  } else {
-    return AlertDialog(
-      title: const Text('Daftar Template Pesan'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Table Header
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: const Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text('Kategori Pesan'),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text('Isi Pesan'),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Text('Action'),
-                    ),
-                  ],
+    if (paginatedList.isEmpty) {
+      // Show a loading indicator or a message while waiting for data
+      return const AlertDialog(
+        title: Text('Daftar Template Pesan'),
+        content: Text('Loading...'),
+      );
+    } else {
+      return AlertDialog(
+        title: const Text('Daftar Template Pesan'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(             
+              children: [
+                // Table Header
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text('Kategori Pesan'),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text('Isi Pesan'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text('Action'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              // Table Rows
-              if (paginatedList.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: paginatedList.length,
-                  itemBuilder: (context, index) {
-                    final item = paginatedList[index];
-                    return Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: InkWell(
-                              onTap: () {
-                                widget.kategoriPesanController.text =
-                                    item.kategoriPesan;
-                                widget.isiPesanController.text = item.isiPesan;
-                                Navigator.pop(context);
-                              },
+                // Table Rows
+                if (paginatedList.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: paginatedList.length,
+                    itemBuilder: (context, index) {
+                      final item = paginatedList[index];
+                      return Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: InkWell(
+                                onTap: () {
+                                  widget.kategoriPesanController.text =
+                                      item.kategoriPesan;
+                                  widget.isiPesanController.text =
+                                      item.isiPesan;
+                                  Navigator.pop(context);
+                                },
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(item.kategoriPesan),
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: ExpandableText(
+                                          item.isiPesan,
+                                          expandText: 'show more',
+                                          collapseText: 'show less',
+                                          //maxLines: 1,
+                                          linkColor: Colors.blue,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
                               child: Row(
                                 children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Text(item.kategoriPesan),
+                                  IconButton(
+                                      onPressed: () {
+                                        final updatedItem =
+                                            daftar_template[index];
+                                        _showUpdateDialog(updatedItem);
+                                      },
+                                      icon: const Icon(Icons.edit,color: Colors.grey,)),
+                                  const SizedBox(
+                                    width: 8,
                                   ),
-                                  Expanded(
-                                      flex: 2,
-                                      child: ExpandableText(
-                                        item.isiPesan,
-                                        expandText: 'show more',
-                                        collapseText: 'show less',
-                                        //maxLines: 1,
-                                        linkColor: Colors.blue,
-                                      )),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,color: Colors.grey),
+                                    onPressed: () {
+                                      deleteTemplatePesan(
+                                          daftar_template[index].id);
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Row(
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      //final updatedItem =
-                                      //daftar_template[index];
-                                      //_showUpdateDialog(updatedItem);
-                                    },
-                                    icon: const Icon(Icons.edit)),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    deleteTemplatePesan(
-                                        daftar_template[index].id);
-                                    setState(() {});
-                                    // ignore: use_build_context_synchronously
-                                    //Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-
-              // Pagination Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left),
-                    onPressed: currentPage > 0
-                        ? () => goToPage(currentPage - 1)
-                        : null,
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  Text('Page ${currentPage + 1}'),
-                  IconButton(
-                    icon: Icon(Icons.chevron_right),
-                    onPressed:
-                        (currentPage + 1) * rowsPerPage < daftar_template.length
-                            ? () => goToPage(currentPage + 1)
-                            : null,
+
+                // Pagination Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left),
+                      onPressed: currentPage > 0
+                          ? () => goToPage(currentPage - 1)
+                          : null,
+                    ),
+                    Text('Page ${currentPage + 1}'),
+                    IconButton(
+                      icon: Icon(Icons.chevron_right),
+                      onPressed: (currentPage + 1) * rowsPerPage <
+                              daftar_template.length
+                          ? () => goToPage(currentPage + 1)
+                          : null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _showUpdateDialog(Template_Pesan currentItem) {
+    editKategoriPesan.text = currentItem.kategoriPesan;
+    editIsiPesan.text = currentItem.isiPesan;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text('Update Item'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                children: [
+                  TextField(
+                    controller: editKategoriPesan,
+                    decoration: const InputDecoration(
+                      labelText: 'Kategori Pesan',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextField(
+                    minLines: 1,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    textInputAction: TextInputAction.newline,
+                    controller: editIsiPesan,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                        ),
+                        contentPadding: EdgeInsets.all(10),
+                        labelText: 'Isi Pesan'),
                   ),
                 ],
               ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _updateTemplatePesan(currentItem.id);
+                    Navigator.of(context).pop();
+                  });
+                },
+                child: Text('Save'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel'),
+              ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
-  }
   }
 }

@@ -6,6 +6,7 @@ import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
 import 'package:blast_whatsapp/utils/link.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -203,29 +204,6 @@ class _HomeState extends State<Home> {
     programDataList = dataList;
   }
 
-  Future<void> fetchdaftarTemplate() async {
-    final url = '${link}daftar_template';
-
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData = json.decode(response.body);
-      final List<Template_Pesan> fetchedMessages = responseData
-          .map((daftar_template) => Template_Pesan(
-                id: daftar_template['_id'],
-                kategoriPesan: daftar_template['kategori_pesan'],
-                isiPesan: daftar_template['isi_pesan'],
-              ))
-          .toList();
-      setState(() {
-        daftar_template = fetchedMessages;
-      });
-    } else {
-      // Error fetching data
-      print('Failed to fetch messages from MongoDB');
-    }
-  }
-
   Future<bool> tambahTemplatePesan(
       String kategoriPesan, String isiPesan) async {
     final url = '${link}tambah_template_pesan';
@@ -246,50 +224,6 @@ class _HomeState extends State<Home> {
       // Error adding data
       print('Failed to add data to MongoDB');
       return false;
-    }
-  }
-
-  Future<void> deleteTemplatePesan(String messageId) async {
-    final url = '${link}delete_template_pesan/$messageId';
-
-    final response = await http.delete(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      // Data deleted successfully
-      print('Data deleted from MongoDB');
-      setState(() {
-        fetchdaftarTemplate();
-        showdaftarTemplateAlertDialog();
-      });
-    } else {
-      // Error deleting data
-      print('Failed to delete data from MongoDB');
-    }
-  }
-
-  Future<void> _updateTemplatePesan(String id) async {
-    final String kategoriPesan = _kategoriPesanController.text;
-    final String isiPesan = _isiPesanController.text;
-
-    // Send the update request to the backend API
-    final response = await http.put(
-      Uri.parse('${link}edit_template_pesan/${id}'),
-      body: {
-        'kategori_pesan': kategoriPesan,
-        'isi_pesan': isiPesan,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      Navigator.of(context).pop();
-      setState(() {
-        fetchdaftarTemplate();
-        showdaftarTemplateAlertDialog();
-      });
-    } else {
-      // Update failed
-      // You can handle the error case based on your requirements
-      print('Update failed: ${response.statusCode}');
     }
   }
 
@@ -414,18 +348,15 @@ class _HomeState extends State<Home> {
                       //const SizedBox(width: 8,),
                       IconButton(
                           onPressed: () async {
-                            await fetchdaftarTemplate();
-                            showdaftarTemplateAlertDialog();
-                            // showDialog(
-                            //   context: context,
-                            //   builder: (context) {
-                            //     return DataTableTemplatePesan(
-                            //         //daftar_template: daftar_template,
-                            //         kategoriPesanController:
-                            //             _kategoriPesanController,
-                            //         isiPesanController: _isiPesanController);
-                            //   },
-                            // );
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DataTableTemplatePesan(
+                                    //daftar_template: daftar_template,
+                                    kategoriPesanController: kategoriPesan,
+                                    isiPesanController: messageController);
+                              },
+                            );
                           },
                           icon: const Icon(Icons.list, color: Colors.grey)),
                     ],
@@ -609,155 +540,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-    );
-  }
-
-  void showdaftarTemplateAlertDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        if (daftar_template.isEmpty) {
-          return const AlertDialog(
-            title: Text('Daftar Template Pesan'),
-            content: Text('Loading...'), // Display a loading indicator
-          );
-        } else {
-          return StatefulBuilder(
-              builder: (context, setState) => AlertDialog(
-                    title: const Text('Daftar Template Pesan'),
-                    content: SizedBox(
-                      width: double.maxFinite,
-                      child: ListView.builder(
-                          itemCount: daftar_template.length,
-                          itemBuilder: (ctx, index) {
-                            if (index >= daftar_template.length) {
-                              return null; // Return null for indices out of range
-                            }
-                            return ListTile(
-                              title: InkWell(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(daftar_template[index].kategoriPesan),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(daftar_template[index].isiPesan),
-                                  ],
-                                ),
-                                onTap: () {
-                                  kategoriPesan.text =
-                                      daftar_template[index].kategoriPesan;
-                                  messageController.text =
-                                      daftar_template[index].isiPesan;
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              trailing: SizedBox(
-                                width: 100,
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                        onPressed: () {
-                                          final updatedItem =
-                                              daftar_template[index];
-                                          _showUpdateDialog(updatedItem);
-                                        },
-                                        icon: const Icon(Icons.edit)),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () {
-                                        deleteTemplatePesan(
-                                            daftar_template[index].id);
-                                        // ignore: use_build_context_synchronously
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Kembali'),
-                      ),
-                    ],
-                  ));
-        }
-      },
-    );
-  }
-
-  void _showUpdateDialog(Template_Pesan currentItem) {
-    _kategoriPesanController.text = currentItem.kategoriPesan;
-    _isiPesanController.text = currentItem.isiPesan;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            title: Text('Update Item'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _kategoriPesanController,
-                    decoration: const InputDecoration(
-                      labelText: 'Kategori Pesan',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextField(
-                    minLines: 1,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    textInputAction: TextInputAction.newline,
-                    controller: _isiPesanController,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(),
-                        ),
-                        contentPadding: EdgeInsets.all(10),
-                        labelText: 'Isi Pesan'),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _updateTemplatePesan(currentItem.id);
-                  });
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                child: Text('Save'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Cancel'),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
