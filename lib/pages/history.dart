@@ -47,7 +47,8 @@ class _HistoryState extends State<History> {
       if (historyResponse.statusCode == 200) {
         setState(() {
           List<dynamic> jsonData = jsonDecode(historyResponse.body);
-          listHistory = jsonData.map((item) => history_models.fromJson(item)).toList();         
+          listHistory =
+              jsonData.map((item) => history_models.fromJson(item)).toList();
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
@@ -65,56 +66,72 @@ class _HistoryState extends State<History> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('History')),
-      drawer: SideNavigationBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Flexible(
-              flex: 1,
-              child: RefreshIndicator(
-                  onRefresh: fetchData,
-                  child: ListView.builder(
-                      itemCount: listHistory.length,
-                      itemBuilder: (ctx, index) {
-                        if (index >= listHistory.length) {
-                          return null; // Return null for indices out of range
-                        }
-                        return ListTile(
-                          title: InkWell(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
-                                Text("Tanggal Kirim : ${listHistory[index].tanggal}"),
-                                Text("ID Pesan : ${listHistory[index].id_pesan}"),
-                              ],
+    if (listHistory.isNotEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text('History')),
+        drawer: SideNavigationBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                flex: 1,
+                child: RefreshIndicator(
+                    onRefresh: fetchData,
+                    child: ListView.builder(
+                        itemCount: listHistory.length,
+                        itemBuilder: (ctx, index) {
+                          if (index >= listHistory.length) {
+                            return null; // Return null for indices out of range
+                          }
+                          return ListTile(
+                            title: InkWell(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                                  Text(
+                                      "Tanggal Kirim : ${listHistory[index].tanggal}"),
+                                  Text(
+                                      "ID Pesan : ${listHistory[index].id_pesan}"),
+                                  const Divider(
+                                    color: Colors.grey,
+                                    height: 1,
+                                  )
+                                ],
+                              ),
+                              onTap: () async {
+                                await getlistpesan(
+                                    listHistory[index].id_pesan!);
+                                setState(() {});
+                              },
                             ),
-                            onTap: () async {
-                              await getlistpesan(listHistory[index].id_pesan!);
-                              setState(() {});
-                            },
-                          ),
-                        );
-                      })),
-            ),
-            Flexible(
-              flex: 2,
-              child: Visibility(
-                visible: listpesan.isNotEmpty,
-                child: listpesan.length > 1
-                    ? SingleChildScrollView(
-                        child: DataTablePesan(listPesan: listpesan),
-                      )
-                    : DataTablePesan(listPesan: listpesan),
+                          );
+                        })),
               ),
-            )
-          ],
+              Flexible(
+                flex: 2,
+                child: Visibility(
+                  visible: listpesan.isNotEmpty,
+                  child: listpesan.length > 1
+                      ? SingleChildScrollView(
+                          child: DataTablePesan(listPesan: listpesan),
+                        )
+                      : DataTablePesan(listPesan: listpesan),
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(title: Text('History')),
+        drawer: SideNavigationBar(),
+        body: Center(child: Text("Belum Ada Histori Pesan")),
+      );
+    }
   }
 }
