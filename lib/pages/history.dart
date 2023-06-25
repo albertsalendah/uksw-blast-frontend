@@ -79,39 +79,38 @@ class _HistoryState extends State<History> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Flexible(
-                flex: 1,
-                child: Center(child: Text(listHistory.length.toString())),
-                // child: ListView.builder(
-                //     itemCount: listHistory.length,
-                //     itemBuilder: (ctx, index) {
-                //       if (index >= listHistory.length) {
-                //         return null; // Return null for indices out of range
-                //       }
-                //       return ListTile(
-                //         title: InkWell(
-                //           child: Column(
-                //             crossAxisAlignment: CrossAxisAlignment.start,
-                //             children: [
-                //               Text(
-                //                   "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
-                //               Text(
-                //                   "Tanggal Kirim : ${listHistory[index].tanggal}"),
-                //               Text(
-                //                   "ID Pesan : ${listHistory[index].id_pesan}"),
-                //               const Divider(
-                //                 color: Colors.grey,
-                //                 height: 1,
-                //               )
-                //             ],
-                //           ),
-                //           onTap: () async {
-                //             await getlistpesan(
-                //                 listHistory[index].id_pesan!);
-                //             setState(() {});
-                //           },
-                //         ),
-                //       );
-                //     }),
+                flex: 1,              
+                child: ListView.builder(
+                    itemCount: listHistory.length,
+                    itemBuilder: (ctx, index) {
+                      if (index >= listHistory.length) {
+                        return null; // Return null for indices out of range
+                      }
+                      return ListTile(
+                        title: InkWell(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  "Kategori Pesan : "+listHistory[index].Kategori_Pesan.toString()),
+                              Text(
+                                  "Tanggal Kirim : "+listHistory[index].tanggal.toString()),
+                              Text(
+                                  "ID Pesan : "+listHistory[index].id_pesan.toString()),
+                              const Divider(
+                                color: Colors.grey,
+                                height: 1,
+                              )
+                            ],
+                          ),
+                          onTap: () async {
+                            await getlistpesan(
+                                listHistory[index].id_pesan ?? '');
+                            setState(() {});
+                          },
+                        ),
+                      );
+                    }),
               ),
               Flexible(
                 flex: 2,

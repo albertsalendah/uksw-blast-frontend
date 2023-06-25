@@ -152,7 +152,7 @@ class _HomeState extends State<Home> {
 
   Future<void> pickFiles() async {
     FilePickerResult? result =
-        await FilePicker.platform.pickFiles(allowMultiple: true);
+        await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (result != null) {
       //List<File> pickedFiles = result.paths.map((path) => File(path!)).toList();
