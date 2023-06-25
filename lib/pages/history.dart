@@ -45,10 +45,13 @@ class _HistoryState extends State<History> {
     try {
       final historyResponse = await http.get(Uri.parse('${link}history'));
       if (historyResponse.statusCode == 200) {
+        List<dynamic> jsonData = jsonDecode(historyResponse.body);
         setState(() {
-          List<dynamic> jsonData = jsonDecode(historyResponse.body);
           listHistory =
               jsonData.map((item) => history_models.fromJson(item)).toList();
+        });
+        listHistory.forEach((element) { 
+          print(element.id_pesan);
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
@@ -77,39 +80,38 @@ class _HistoryState extends State<History> {
             children: [
               Flexible(
                 flex: 1,
-                child: RefreshIndicator(
-                    onRefresh: fetchData,
-                    child: ListView.builder(
-                        itemCount: listHistory.length,
-                        itemBuilder: (ctx, index) {
-                          if (index >= listHistory.length) {
-                            return null; // Return null for indices out of range
-                          }
-                          return ListTile(
-                            title: InkWell(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
-                                  Text(
-                                      "Tanggal Kirim : ${listHistory[index].tanggal}"),
-                                  Text(
-                                      "ID Pesan : ${listHistory[index].id_pesan}"),
-                                  const Divider(
-                                    color: Colors.grey,
-                                    height: 1,
-                                  )
-                                ],
-                              ),
-                              onTap: () async {
-                                await getlistpesan(
-                                    listHistory[index].id_pesan!);
-                                setState(() {});
-                              },
-                            ),
-                          );
-                        })),
+                child: Center(child: Text(listHistory.length.toString())),
+                // child: ListView.builder(
+                //     itemCount: listHistory.length,
+                //     itemBuilder: (ctx, index) {
+                //       if (index >= listHistory.length) {
+                //         return null; // Return null for indices out of range
+                //       }
+                //       return ListTile(
+                //         title: InkWell(
+                //           child: Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               Text(
+                //                   "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                //               Text(
+                //                   "Tanggal Kirim : ${listHistory[index].tanggal}"),
+                //               Text(
+                //                   "ID Pesan : ${listHistory[index].id_pesan}"),
+                //               const Divider(
+                //                 color: Colors.grey,
+                //                 height: 1,
+                //               )
+                //             ],
+                //           ),
+                //           onTap: () async {
+                //             await getlistpesan(
+                //                 listHistory[index].id_pesan!);
+                //             setState(() {});
+                //           },
+                //         ),
+                //       );
+                //     }),
               ),
               Flexible(
                 flex: 2,
