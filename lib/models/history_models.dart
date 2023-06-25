@@ -4,7 +4,7 @@ class history_models {
   String? No_Handphone;
   String? Kategori_Pesan;
   String? Status_Pesan;
-  
+  String? tanggal;
 
   history_models(
       {this.id_pesan,
@@ -12,7 +12,7 @@ class history_models {
       this.No_Handphone,
       this.Kategori_Pesan,
       this.Status_Pesan,
-      });
+      this.tanggal});
 
   history_models.fromJson(Map<String, dynamic> json) {
     id_pesan = json['id_pesan'];
@@ -20,6 +20,7 @@ class history_models {
     No_Handphone = json['No_Handphone'];
     Kategori_Pesan = json['Kategori_Pesan'];
     Status_Pesan = json['Status_Pesan'];
+    tanggal = json['tanggal'];
   }
 
   Map<String, dynamic> toJson() {
@@ -29,6 +30,7 @@ class history_models {
     data['No_Handphone'] = this.No_Handphone;
     data['Kategori_Pesan'] = this.Kategori_Pesan;
     data['Status_Pesan'] = this.Status_Pesan;
+    data['tanggal'] = this.tanggal;
     return data;
   }
 }

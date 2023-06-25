@@ -16,7 +16,7 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  List<String> listHistory = [];
+  List<history_models> listHistory = [];
   String? sortColumn;
   bool isAscending = true;
   String link = Links().link;
@@ -46,16 +46,14 @@ class _HistoryState extends State<History> {
       final historyResponse = await http.get(Uri.parse('${link}history'));
       if (historyResponse.statusCode == 200) {
         setState(() {
-          List<dynamic> data = jsonDecode(historyResponse.body);
-          listHistory = List<String>.from(data);
+          List<dynamic> jsonData = jsonDecode(historyResponse.body);
+          listHistory = jsonData.map((item) => history_models.fromJson(item)).toList();         
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
-        //fetchData();
       }
     } catch (e) {
       print(e);
-      //fetchData();
     }
   }
 
@@ -90,11 +88,13 @@ class _HistoryState extends State<History> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(listHistory[index]),
+                                Text("Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                                Text("Tanggal Kirim : ${listHistory[index].tanggal}"),
+                                Text("ID Pesan : ${listHistory[index].id_pesan}"),
                               ],
                             ),
                             onTap: () async {
-                              await getlistpesan(listHistory[index]);
+                              await getlistpesan(listHistory[index].id_pesan!);
                               setState(() {});
                             },
                           ),
