@@ -6,7 +6,6 @@ import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
 import 'package:blast_whatsapp/utils/link.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -14,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../navigation/sidenavigationbar.dart';
 import 'package:http/http.dart' as http;
-
 import '../screens/tabel_tamplate_pesan.dart';
 import '../utils/SessionManager.dart';
 import '../utils/config.dart';
@@ -30,9 +28,6 @@ class _HomeState extends State<Home> {
   final String link = Links().link;
   TextEditingController messageController = TextEditingController();
   TextEditingController kategoriPesan = TextEditingController();
-  final TextEditingController _kategoriPesanController =
-      TextEditingController();
-  final TextEditingController _isiPesanController = TextEditingController();
   List<PlatformFile> listNohp = [];
   List<PlatformFile> files = [];
   String selectedValue = 'All';
@@ -44,6 +39,8 @@ class _HomeState extends State<Home> {
   List<String> listProgdi = [];
   List<Template_Pesan> daftar_template = [];
   Timer? _timer;
+  bool isLoading = false;
+  String restotalNomor = '';
 
   @override
   void initState() {
@@ -150,6 +147,37 @@ class _HomeState extends State<Home> {
     jobs.add(Job(id: jobId));
   }
 
+  Future<void> checkTotalMahasiswa() async {
+    setState(() {
+      isLoading = true;
+    });
+    final url = Uri.parse('${link}checktotalmahasiswa');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(
+        {
+          'tahun': selectedYear,
+          'progdi': selectedKodeProgdi,
+          'status_regis': selectedValue,
+        },
+      ),
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        isLoading = false;
+        restotalNomor = jsonDecode(response.body)['response'].toString();
+        print(jsonDecode(response.body)['response']);
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+        restotalNomor = '';
+      });
+      print('Check Data Failed: ${jsonDecode(response.body)['response']}');
+    }
+  }
+
   Future<void> pickFiles() async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: false);
@@ -235,7 +263,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(title: const Text('Home')),
       drawer: SideNavigationBar(),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             Flexible(
@@ -254,7 +282,7 @@ class _HomeState extends State<Home> {
                             SizedBox(
                               width: 8,
                             ),
-                            Text("Pilih Excel File .xlsx : "),
+                            Text("Pilih Excel File .xlsx | "),
                           ],
                         ),
                       ),
@@ -265,7 +293,7 @@ class _HomeState extends State<Home> {
                         Row(children: [
                           Text(listNohp[0].name),
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.grey),
+                            icon: const Icon(Icons.delete, color: Colors.grey),
                             onPressed: () => deleteExcelFile(0),
                           )
                         ]),
@@ -274,19 +302,34 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 8,
                   ),
-                  InkWell(
-                    onTap: () async {
-                      await pickFiles();
-                    },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.image, color: Colors.grey),
-                        SizedBox(
-                          width: 8,
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () async {
+                          await pickFiles();
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.image, color: Colors.grey),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text("Pilih File Untuk Dikirim | "),
+                          ],
                         ),
-                        Text("Pilih File Untuk Dikirim"),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      if (files.isNotEmpty)
+                        Row(children: [
+                          Text(files[0].name),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.grey),
+                            onPressed: () => deleteFile(0),
+                          )
+                        ])
+                    ],
                   ),
                   const SizedBox(
                     height: 8,
@@ -362,59 +405,33 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 8,
                   ),
-                  DropdownButton<String>(
-                    isExpanded: true,
-                    menuMaxHeight: 300,
-                    value: selectedYear,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedYear = newValue!;
-                        print(selectedYear);
-                      });
-                    },
-                    items: List<DropdownMenuItem<String>>.generate(
-                      86, // Number of years from 2015 to 2100
-                      (index) {
-                        final startYear = 2012 + index;
-                        final endYear = 2013 + index;
-                        final yearRange = '$startYear-$endYear';
-                        return DropdownMenuItem<String>(
-                          value: yearRange,
-                          child: Text(yearRange),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  DropdownSearch<String>(
-                    items: listProgdi, //List.generate(50, (i) => i),
-                    onChanged: (value) {
-                      setState(() {
-                        programDataList.forEach((element) {
-                          if (element.namaProgdi == value) {
-                            selectedKodeProgdi = element.kodeProgdi;
-                          }
-                        });
-                      });
-                    },
-                    dropdownBuilder: (context, selectedItem) => Text(
-                        (selectedKodeProgdi.isNotEmpty)
-                            ? selectedItem ?? "Progdi"
-                            : "Progdi"),
-                    popupProps: PopupProps.menu(
-                      showSearchBox: true,
-                      title: const Text('Daftar Progdi'),
-                      itemBuilder: (context, item, isSelected) => ListTile(
-                        title: Column(
-                          children: [
-                            Text(
-                              item,
-                              style: const TextStyle(
-                                  fontSize: 14.0, fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                  InputDecorator(
+                    decoration:
+                        const InputDecoration(border: OutlineInputBorder()),
+                    child: SizedBox(
+                      height: 15,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          menuMaxHeight: 300,
+                          value: selectedYear,
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedYear = newValue!;
+                            });
+                          },
+                          items: List<DropdownMenuItem<String>>.generate(
+                            86, // Number of years from 2015 to 2100
+                            (index) {
+                              final startYear = 2012 + index;
+                              final endYear = 2013 + index;
+                              final yearRange = '$startYear-$endYear';
+                              return DropdownMenuItem<String>(
+                                value: yearRange,
+                                child: Text(yearRange),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -422,28 +439,100 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 8,
                   ),
-                  DropdownButton<String>(
-                    isExpanded: true,
-                    value: selectedValue,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedValue = newValue!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem<String>(
-                        value: 'Belum',
-                        child: Text('Belum'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownSearch<String>(
+                          items: listProgdi, //List.generate(50, (i) => i),
+                          onChanged: (value) {
+                            setState(() {
+                              programDataList.forEach((element) {
+                                if (element.namaProgdi == value) {
+                                  selectedKodeProgdi = element.kodeProgdi;
+                                }
+                              });
+                            });
+                          },
+                          dropdownBuilder: (context, selectedItem) => Text(
+                              (selectedKodeProgdi.isNotEmpty)
+                                  ? selectedItem ?? "Progdi"
+                                  : "Progdi"),
+                          popupProps: PopupProps.menu(
+                            showSearchBox: true,
+                            title: const Text('Daftar Progdi'),
+                            itemBuilder: (context, item, isSelected) =>
+                                ListTile(
+                              title: Column(
+                                children: [
+                                  Text(
+                                    item,
+                                    style: const TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      DropdownMenuItem<String>(
-                        value: 'Diterima',
-                        child: Text('Diterima'),
+                      const SizedBox(
+                        width: 8,
                       ),
-                      DropdownMenuItem<String>(
-                        value: 'All',
-                        child: Text('All'),
-                      ),
+                      Visibility(
+                        visible: !isLoading,
+                        replacement: const CircularProgressIndicator(),
+                        child: IconButton(
+                          onPressed: () async {
+                            await checkTotalMahasiswa();
+                            if(restotalNomor.isNotEmpty && !isLoading){
+                              NOTIF_SCREEN.show(context, "Success", "Total Nomor Yang Ditemukan : $restotalNomor");
+                            }else{
+                              NOTIF_SCREEN.show(context, "Failed", "Gagal Mengambil Data Dari Server");
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.numbers,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      )
                     ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  InputDecorator(
+                    decoration:
+                        const InputDecoration(border: OutlineInputBorder()),
+                    child: SizedBox(
+                      height: 15,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          value: selectedValue,
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedValue = newValue!;
+                            });
+                          },
+                          items: const [
+                            DropdownMenuItem<String>(
+                              value: 'Belum',
+                              child: Text('Belum Registrasi Ulang'),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Diterima',
+                              child: Text('Diterima (Sudah Registrasi Ulang)'),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'All',
+                              child: Text('All'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
@@ -455,7 +544,6 @@ class _HomeState extends State<Home> {
                           kategoriPesan.text.isNotEmpty) {
                         await sendPostRequest();
                       } else {
-                        print("text kosong");
                         popUp(context, "Message & Progdi Tidak Boleh Kosong");
                       }
                       setState(() {
@@ -468,28 +556,8 @@ class _HomeState extends State<Home> {
                         listNohp = [];
                       });
                     },
-                    child: Text('Send Request'),
+                    child: const Text('Send Request'),
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Text('Selected Files: ${files.length}'),
-                  if (files.isNotEmpty)
-                    Column(
-                      children: files
-                          .asMap()
-                          .entries
-                          .map(
-                            (entry) => ListTile(
-                              title: Text(entry.value.name),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () => deleteFile(entry.key),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
                   const SizedBox(
                     height: 16,
                   ),
