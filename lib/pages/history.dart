@@ -121,7 +121,6 @@ class _HistoryState extends State<History> {
                                 onTap: () async {
                                   await getlistpesan(
                                       listHistory[index].id_pesan ?? '');
-                                  setState(() {});
                                 },
                               ),
                             ),
@@ -158,17 +157,13 @@ class _HistoryState extends State<History> {
               ),
               Expanded(
                 child: Visibility(
-                  visible: listpesan.isNotEmpty,
-                  child: listpesan.length > 1
-                      ? Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SingleChildScrollView(
-                              child: DataTablePesan(listPesan: listpesan),
-                            ),
-                        ],
-                      )
-                      : DataTablePesan(listPesan: listpesan),
-                ),
+                    visible: listpesan.isNotEmpty,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: DataTablePesan(listPesan: listpesan)),
+                      ],
+                    )),
               )
             ],
           ),

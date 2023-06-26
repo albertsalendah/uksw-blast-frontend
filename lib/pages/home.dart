@@ -155,10 +155,8 @@ class _HomeState extends State<Home> {
         await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (result != null) {
-      //List<File> pickedFiles = result.paths.map((path) => File(path!)).toList();
       List<PlatformFile> file = result.files;
       setState(() {
-        //files = pickedFiles;
         files = file;
       });
     }
