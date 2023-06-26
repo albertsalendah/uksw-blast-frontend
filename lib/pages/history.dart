@@ -41,6 +41,23 @@ class _HistoryState extends State<History> {
     }
   }
 
+  Future<void> deletelistpesan(String idPesan) async {
+    var request =
+        http.Request('POST', Uri.parse('${link}deletelistpesan/$idPesan'));
+    request.body = '''''';
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String responseString = await response.stream.bytesToString();
+      dynamic parsedData = json.decode(responseString);
+      print(parsedData);
+      fetchData();
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
   Future<void> fetchData() async {
     try {
       final historyResponse = await http.get(Uri.parse('${link}history'));
@@ -49,9 +66,6 @@ class _HistoryState extends State<History> {
         setState(() {
           listHistory =
               jsonData.map((item) => history_models.fromJson(item)).toList();
-        });
-        listHistory.forEach((element) { 
-          print(element.id_pesan);
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
@@ -76,10 +90,8 @@ class _HistoryState extends State<History> {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Flexible(
-                flex: 1,              
+              Expanded(
                 child: ListView.builder(
                     itemCount: listHistory.length,
                     itemBuilder: (ctx, index) {
@@ -87,39 +99,74 @@ class _HistoryState extends State<History> {
                         return null; // Return null for indices out of range
                       }
                       return ListTile(
-                        title: InkWell(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  "Kategori Pesan : "+listHistory[index].Kategori_Pesan.toString()),
-                              Text(
-                                  "Tanggal Kirim : "+listHistory[index].tanggal.toString()),
-                              Text(
-                                  "ID Pesan : "+listHistory[index].id_pesan.toString()),
-                              const Divider(
-                                color: Colors.grey,
-                                height: 1,
-                              )
-                            ],
-                          ),
-                          onTap: () async {
-                            await getlistpesan(
-                                listHistory[index].id_pesan ?? '');
-                            setState(() {});
-                          },
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                                    Text(
+                                        "Tanggal Kirim : ${listHistory[index].tanggal}"),
+                                    Text(
+                                        "ID Pesan : ${listHistory[index].id_pesan}"),
+                                    const Divider(
+                                      color: Colors.grey,
+                                      height: 1,
+                                    )
+                                  ],
+                                ),
+                                onTap: () async {
+                                  await getlistpesan(
+                                      listHistory[index].id_pesan ?? '');
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.download,
+                                        color: Colors.grey,
+                                      )),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.grey),
+                                    onPressed: () {
+                                      deletelistpesan(
+                                          listHistory[index].id_pesan ?? '');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }),
               ),
-              Flexible(
-                flex: 2,
+              Expanded(
                 child: Visibility(
                   visible: listpesan.isNotEmpty,
                   child: listpesan.length > 1
-                      ? SingleChildScrollView(
-                          child: DataTablePesan(listPesan: listpesan),
-                        )
+                      ? Column(crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SingleChildScrollView(
+                              child: DataTablePesan(listPesan: listpesan),
+                            ),
+                        ],
+                      )
                       : DataTablePesan(listPesan: listpesan),
                 ),
               )
