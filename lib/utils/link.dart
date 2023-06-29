@@ -9,5 +9,5 @@ class Links {
 
   Links._internal();
 
-  String link = Config.LOCAL_LINK;
+  String link = Config.LINK;
 }
