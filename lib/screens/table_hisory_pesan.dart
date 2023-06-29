@@ -22,10 +22,18 @@ class _DataTablePesanState extends State<DataTablePesan> {
     paginateList();
   }
 
+  @override
+  void didUpdateWidget(covariant DataTablePesan oldWidget) {
+    if (oldWidget.listPesan != widget.listPesan) {
+      currentPage = 0;
+      paginateList();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
   void paginateList() {
     final startIndex = currentPage * rowsPerPage;
-    final endIndex = startIndex + rowsPerPage;
-
+    final endIndex = startIndex + rowsPerPage;   
     if (startIndex < widget.listPesan.length) {
       setState(() {
         paginatedList = widget.listPesan.sublist(
@@ -77,7 +85,7 @@ class _DataTablePesanState extends State<DataTablePesan> {
               ],
             ),
           ),
-    
+
           // Table Rows
           if (paginatedList.isNotEmpty)
             ListView.builder(
@@ -140,7 +148,7 @@ class _DataTablePesanState extends State<DataTablePesan> {
                 );
               },
             ),
-    
+
           // Pagination Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

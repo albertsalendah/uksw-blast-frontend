@@ -22,6 +22,10 @@ class _HistoryState extends State<History> {
   String link = Links().link;
   List<history_models> listpesan = [];
 
+  void handleHistorySelection(String idPesan) {
+    getlistpesan(idPesan);
+  }
+
   Future<void> getlistpesan(String idPesan) async {
     var request =
         http.Request('GET', Uri.parse('${link}getlistpesan/$idPesan'));
@@ -118,8 +122,8 @@ class _HistoryState extends State<History> {
                                     )
                                   ],
                                 ),
-                                onTap: () async {
-                                  await getlistpesan(
+                                onTap: () {
+                                  handleHistorySelection(
                                       listHistory[index].id_pesan ?? '');
                                 },
                               ),
@@ -144,6 +148,8 @@ class _HistoryState extends State<History> {
                                         color: Colors.grey),
                                     onPressed: () {
                                       deletelistpesan(
+                                          listHistory[index].id_pesan ?? '');
+                                      handleHistorySelection(
                                           listHistory[index].id_pesan ?? '');
                                     },
                                   ),
@@ -171,9 +177,9 @@ class _HistoryState extends State<History> {
       );
     } else {
       return Scaffold(
-        appBar: AppBar(title: Text('History')),
+        appBar: AppBar(title: const Text('History')),
         drawer: SideNavigationBar(),
-        body: Center(child: Text("Belum Ada Histori Pesan")),
+        body: const Center(child: Text("Belum Ada Histori Pesan")),
       );
     }
   }

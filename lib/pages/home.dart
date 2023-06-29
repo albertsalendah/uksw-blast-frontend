@@ -266,8 +266,7 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Flexible(
-              flex: 1,
+            Expanded(
               child: ListView(
                 children: [
                   Row(
@@ -290,13 +289,15 @@ class _HomeState extends State<Home> {
                         width: 8,
                       ),
                       if (listNohp.isNotEmpty)
-                        Row(children: [
-                          Text(listNohp[0].name),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.grey),
-                            onPressed: () => deleteExcelFile(0),
-                          )
-                        ]),
+                        Expanded(
+                          child: Row(children: [
+                            Expanded(child: Text(listNohp[0].name,overflow: TextOverflow.ellipsis,maxLines: 1,)),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.grey),
+                              onPressed: () => deleteExcelFile(0),
+                            )
+                          ]),
+                        ),
                     ],
                   ),
                   const SizedBox(
@@ -322,13 +323,15 @@ class _HomeState extends State<Home> {
                         width: 8,
                       ),
                       if (files.isNotEmpty)
-                        Row(children: [
-                          Text(files[0].name),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.grey),
-                            onPressed: () => deleteFile(0),
-                          )
-                        ])
+                        Expanded(
+                          child: Row(children: [
+                            Expanded(child: Text(files[0].name,overflow: TextOverflow.ellipsis,maxLines: 1,)),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.grey),
+                              onPressed: () => deleteFile(0),
+                            )
+                          ]),
+                        )
                     ],
                   ),
                   const SizedBox(
@@ -485,10 +488,12 @@ class _HomeState extends State<Home> {
                         child: IconButton(
                           onPressed: () async {
                             await checkTotalMahasiswa();
-                            if(restotalNomor.isNotEmpty && !isLoading){
-                              NOTIF_SCREEN.show(context, "Success", "Total Nomor Yang Ditemukan : $restotalNomor");
-                            }else{
-                              NOTIF_SCREEN.show(context, "Failed", "Gagal Mengambil Data Dari Server");
+                            if (restotalNomor.isNotEmpty && !isLoading) {
+                              NOTIF_SCREEN.show(context, "Success",
+                                  "Total Nomor Yang Ditemukan : $restotalNomor");
+                            } else {
+                              NOTIF_SCREEN.show(context, "Failed",
+                                  "Gagal Mengambil Data Dari Server");
                             }
                           },
                           icon: const Icon(
@@ -564,11 +569,10 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-//--------------------PROGRESS-----------------------------------------------------------
+        //--------------------PROGRESS-----------------------------------------------------------
             Visibility(
               visible: activeJobs.isNotEmpty,
-              child: Flexible(
-                flex: 1,
+              child: Expanded(
                 child: Column(
                   children: [
                     const Center(
