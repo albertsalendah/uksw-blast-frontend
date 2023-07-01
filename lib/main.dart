@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   String qr = '';
   late SocketProvider socketProvider;
   String logs = '';
+  bool loginbtn = false;
 
   @override
   void initState() {
@@ -78,6 +79,9 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   }
 
   Future<void> login() async {
+    setState(() {
+      loginbtn = true;
+    });
     final url = Uri.parse('${link}login');
     final response = await http.post(
       url,
@@ -94,10 +98,15 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       final token = jsonDecode(response.body)['token'];
       // Do something with the token
       await SessionManager.saveToken(token);
-      setState(() {});
+      setState(() {
+        loginbtn = false;
+        //Navigator.of(context).pop();
+        //Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
+      }); 
       window.location.reload();
     } else {
       final message = jsonDecode(response.body)['message'];
+      loginbtn = false;
       print('Login failed: $message');
     }
   }
@@ -266,11 +275,15 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                       ),
                       Align(
                           alignment: Alignment.bottomRight,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                await login();
-                              },
-                              child: const Text("Login")))
+                          child: Visibility(
+                            visible: !loginbtn,
+                            replacement: const CircularProgressIndicator(),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  await login();
+                                },
+                                child: const Text("Login")),
+                          ))
                     ],
                   ),
                 )),

@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
   Timer? _timer;
   bool isLoading = false;
   String restotalNomor = '';
+  bool loadbtnsend = false;
 
   @override
   void initState() {
@@ -82,6 +83,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> sendPostRequest() async {
+    setState(() {
+      loadbtnsend = true;
+    });
     var url = '${link}send-message';
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -112,8 +116,7 @@ class _HomeState extends State<Home> {
     // Attach files, if any
     if (listNohp.isNotEmpty) {
       for (var file in listNohp) {
-        String fieldName =
-            'daftar_no'; // Adjust field name as per your server code
+        String fieldName = 'daftar_no';
         String fileName = file.name;
         var fileBytes = file.bytes;
         request.files.add(
@@ -130,6 +133,12 @@ class _HomeState extends State<Home> {
     var responseString = await response.stream.bytesToString();
     var jsonResponse = json.decode(responseString);
     final jobId = jsonResponse['jobId'];
+
+    if(responseString != ''){
+      setState(() {
+        loadbtnsend = false;
+      });
+    }
 
     Job? existingJob;
     for (final job in jobs) {
@@ -224,9 +233,9 @@ class _HomeState extends State<Home> {
     List<ProgdiModels> dataList =
         jsonList.map((json) => ProgdiModels.fromJson(json)).toList();
 
-    dataList.forEach((element) {
+    for (var element in dataList) {
       listProgdi.add(element.namaProgdi);
-    });
+    }
     programDataList = dataList;
   }
 
@@ -291,9 +300,15 @@ class _HomeState extends State<Home> {
                       if (listNohp.isNotEmpty)
                         Expanded(
                           child: Row(children: [
-                            Expanded(child: Text(listNohp[0].name,overflow: TextOverflow.ellipsis,maxLines: 1,)),
+                            Expanded(
+                                child: Text(
+                              listNohp[0].name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            )),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.grey),
+                              icon:
+                                  const Icon(Icons.delete, color: Colors.grey),
                               onPressed: () => deleteExcelFile(0),
                             )
                           ]),
@@ -325,9 +340,15 @@ class _HomeState extends State<Home> {
                       if (files.isNotEmpty)
                         Expanded(
                           child: Row(children: [
-                            Expanded(child: Text(files[0].name,overflow: TextOverflow.ellipsis,maxLines: 1,)),
+                            Expanded(
+                                child: Text(
+                              files[0].name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            )),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.grey),
+                              icon:
+                                  const Icon(Icons.delete, color: Colors.grey),
                               onPressed: () => deleteFile(0),
                             )
                           ]),
@@ -489,9 +510,11 @@ class _HomeState extends State<Home> {
                           onPressed: () async {
                             await checkTotalMahasiswa();
                             if (restotalNomor.isNotEmpty && !isLoading) {
+                              // ignore: use_build_context_synchronously
                               NOTIF_SCREEN.show(context, "Success",
                                   "Total Nomor Yang Ditemukan : $restotalNomor");
                             } else {
+                              // ignore: use_build_context_synchronously
                               NOTIF_SCREEN.show(context, "Failed",
                                   "Gagal Mengambil Data Dari Server");
                             }
@@ -542,26 +565,30 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 16,
                   ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (messageController.text.isNotEmpty &&
-                          selectedKodeProgdi.isNotEmpty &&
-                          kategoriPesan.text.isNotEmpty) {
-                        await sendPostRequest();
-                      } else {
-                        popUp(context, "Message & Progdi Tidak Boleh Kosong");
-                      }
-                      setState(() {
-                        messageController.text = '';
-                        selectedYear = '2023-2024';
-                        selectedValue = 'All';
-                        selectedKodeProgdi = '';
-                        kategoriPesan.text = '';
-                        files = [];
-                        listNohp = [];
-                      });
-                    },
-                    child: const Text('Send Request'),
+                  Visibility(
+                    visible: !loadbtnsend,
+                    replacement: const LinearProgressIndicator(),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (messageController.text.isNotEmpty &&
+                            selectedKodeProgdi.isNotEmpty &&
+                            kategoriPesan.text.isNotEmpty) {
+                          await sendPostRequest();
+                        } else {
+                          popUp(context, "Message & Progdi Tidak Boleh Kosong");
+                        }
+                        setState(() {
+                          messageController.text = '';
+                          selectedYear = '2023-2024';
+                          selectedValue = 'All';
+                          selectedKodeProgdi = '';
+                          kategoriPesan.text = '';
+                          files = [];
+                          listNohp = [];
+                        });
+                      },
+                      child: const Text('Send Request'),
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
@@ -569,7 +596,17 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-        //--------------------PROGRESS-----------------------------------------------------------
+            Visibility(
+              visible: activeJobs.isNotEmpty,
+              child: const VerticalDivider(
+                width: 20,
+                thickness: 1,
+                indent: 20,
+                endIndent: 0,
+                color: Colors.grey,
+              ),
+            ),
+            //--------------------PROGRESS-----------------------------------------------------------
             Visibility(
               visible: activeJobs.isNotEmpty,
               child: Expanded(

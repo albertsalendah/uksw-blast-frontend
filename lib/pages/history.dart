@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:blast_whatsapp/models/history_models.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,15 @@ class _HistoryState extends State<History> {
     }
   }
 
+  Future<void> downloadFile(String idPesan) async {
+    // ignore: unused_local_variable
+    final anchor = AnchorElement(
+      href: '${link}downloadhistorypesan/$idPesan',
+    )
+      ..setAttribute('download', idPesan)
+      ..click();
+  }
+
   @override
   void initState() {
     fetchData();
@@ -114,8 +124,8 @@ class _HistoryState extends State<History> {
                                         "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
                                     Text(
                                         "Tanggal Kirim : ${listHistory[index].tanggal}"),
-                                    Text(
-                                        "ID Pesan : ${listHistory[index].id_pesan}"),
+                                    // Text(
+                                    //     "ID Pesan : ${listHistory[index].id_pesan}"),
                                     const Divider(
                                       color: Colors.grey,
                                       height: 1,
@@ -135,7 +145,9 @@ class _HistoryState extends State<History> {
                               child: Row(
                                 children: [
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        downloadFile(listHistory[index].id_pesan ?? '');
+                                      },
                                       icon: const Icon(
                                         Icons.download,
                                         color: Colors.grey,

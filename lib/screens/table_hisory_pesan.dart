@@ -70,10 +70,10 @@ class _DataTablePesanState extends State<DataTablePesan> {
                   flex: 1,
                   child: Text('No Handphone'),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Text('id_pesan'),
-                ),
+                // Expanded(
+                //   flex: 1,
+                //   child: Text('id_pesan'),
+                // ),
                 Expanded(
                   flex: 1,
                   child: Text('Kategori Pesan'),
@@ -113,16 +113,16 @@ class _DataTablePesanState extends State<DataTablePesan> {
                         flex: 1,
                         child: Text(item.No_Handphone ?? ''),
                       ),
-                      Expanded(
-                        flex: 1,
-                        child: ExpandableText(
-                          item.id_pesan ?? '',
-                          expandText: 'show more',
-                          collapseText: 'show less',
-                          maxLines: 1,
-                          linkColor: Colors.blue,
-                        ),
-                      ),
+                      // Expanded(
+                      //   flex: 1,
+                      //   child: ExpandableText(
+                      //     item.id_pesan ?? '',
+                      //     expandText: 'show more',
+                      //     collapseText: 'show less',
+                      //     maxLines: 1,
+                      //     linkColor: Colors.blue,
+                      //   ),
+                      // ),
                       Expanded(
                         flex: 1,
                         child: ExpandableText(

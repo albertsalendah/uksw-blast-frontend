@@ -28,7 +28,7 @@ class SocketProvider extends ChangeNotifier {
       });
       socket?.on('log', (response) {
         if (response != null) {
-          //message = response;
+          message = response;
           messages?.call(response);
           print(message);
         }
