@@ -168,7 +168,8 @@ class _HistoryState extends State<History> {
                                 children: [
                                   IconButton(
                                       onPressed: () {
-                                        downloadFile(listHistory[index].id_pesan ?? '');
+                                        downloadFile(
+                                            listHistory[index].id_pesan ?? '');
                                       },
                                       icon: const Icon(
                                         Icons.download,
@@ -181,10 +182,8 @@ class _HistoryState extends State<History> {
                                     icon: const Icon(Icons.delete,
                                         color: Colors.grey),
                                     onPressed: () {
-                                      deletelistpesan(
-                                          listHistory[index].id_pesan ?? '');
-                                      handleHistorySelection(
-                                          listHistory[index].id_pesan ?? '');
+                                      showDeleteHirtoryAlertDialog(context,
+                                          listHistory[index].id_pesan ?? '',listHistory[index].Kategori_Pesan ?? '');
                                     },
                                   ),
                                 ],
@@ -216,5 +215,35 @@ class _HistoryState extends State<History> {
         body: const Center(child: Text("Belum Ada Histori Pesan")),
       );
     }
+  }
+
+  showDeleteHirtoryAlertDialog(BuildContext context, String id_pesan,String Kat) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete'),
+          content: Text('Hapus $Kat?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  deletelistpesan(id_pesan);
+                  handleHistorySelection(id_pesan);
+                });
+              },
+              child: Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

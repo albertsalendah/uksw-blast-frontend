@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    startSessionTimer();
+    //startSessionTimer();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -97,13 +97,11 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     );
 
     if (response.statusCode == 200) {
-      final token = jsonDecode(response.body)['token'];
+      final token = await jsonDecode(response.body)['token'];
       // Do something with the token
       await SessionManager.saveToken(token);
       setState(() {
         loginbtn = false;
-        //Navigator.of(context).pop();
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
       });
       window.location.reload();
     } else {
