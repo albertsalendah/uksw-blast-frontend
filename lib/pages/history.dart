@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
@@ -7,6 +8,8 @@ import 'package:http/http.dart' as http;
 
 import '../navigation/sidenavigationbar.dart';
 import '../screens/table_hisory_pesan.dart';
+import '../utils/SessionManager.dart';
+import '../utils/config.dart';
 import '../utils/link.dart';
 
 class History extends StatefulWidget {
@@ -22,6 +25,7 @@ class _HistoryState extends State<History> {
   bool isAscending = true;
   String link = Links().link;
   List<history_models> listpesan = [];
+  Timer? _timer;
 
   void handleHistorySelection(String idPesan) {
     getlistpesan(idPesan);
@@ -89,10 +93,28 @@ class _HistoryState extends State<History> {
       ..click();
   }
 
+  void startSessionTimer() {
+    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration),
+        (timer) async {
+      final isSessionExpired = await SessionManager.isSessionExpired();
+      if (isSessionExpired) {
+        await SessionManager.logout();
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void initState() {
+    startSessionTimer();
     fetchData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

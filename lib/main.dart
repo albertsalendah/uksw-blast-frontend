@@ -43,10 +43,12 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   late SocketProvider socketProvider;
   String logs = '';
   bool loginbtn = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    startSessionTimer();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -102,7 +104,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
         loginbtn = false;
         //Navigator.of(context).pop();
         //Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
-      }); 
+      });
       window.location.reload();
     } else {
       final message = jsonDecode(response.body)['message'];
@@ -147,8 +149,19 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     });
   }
 
+  void startSessionTimer() {
+    _timer = Timer.periodic(const Duration(minutes: 5), (timer) async {
+      final isSessionExpired = await SessionManager.isSessionExpired();
+      if (isSessionExpired) {
+        await SessionManager.logout();
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     socketProvider = Provider.of<SocketProvider>(context, listen: false);
     socketProvider.socket?.disconnect();
@@ -166,32 +179,35 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     final isLoggedIn = widget.isLoggedIn;
     if (isLoggedIn) {
       if (loading) {
-        return MaterialApp(
-            home: Scaffold(
-                body: Center(
-                    child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            logo(),
-            const SizedBox(
-              height: 16,
-            ),
-            Text(logs)
-          ],
-        ))));
+        return MaterialApp(home: Scaffold(body: Center(child: logo())));
       } else if (showQR) {
         return MaterialApp(
           home: Scaffold(
             body: Center(
               child: Visibility(
                 visible: showQR,
-                child: SizedBox(
-                  height: 250,
-                  width: 250,
-                  child: QrImageView(
-                    data: qr,
-                    version: QrVersions.auto,
-                    size: 200.0,
+                child: Card(
+                  elevation: 3,
+                  child: SizedBox(
+                    height: 300,
+                    width: 250,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        QrImageView(
+                          data: qr,
+                          version: QrVersions.auto,
+                          size: 200.0,
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          logs,
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -204,19 +220,6 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             body: Home(),
           ),
         );
-        // return FutureBuilder(
-        //   future: Future.delayed(const Duration(seconds: 5)),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       _controller.repeat();
-        //       return logo();
-        //     } else {
-        //       _controller.stop();
-        //       _controller.dispose();
-
-        //     }
-        //   },
-        // );
       } else {
         return const MaterialApp(
           home: Scaffold(
@@ -300,43 +303,52 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     double blur = isPressd ? 5.0 : 30.0;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 1000),
-      child: SizedBox(
-        width: 115,
-        height: 115,
-        child: Center(
-          child: Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade500,
-                  offset: distance,
-                  blurRadius: blur,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 115,
+            height: 115,
+            child: Center(
+              child: Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade500,
+                      offset: distance,
+                      blurRadius: blur,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: -distance,
+                      blurRadius: blur,
+                      //inset: isPressd
+                    ),
+                  ],
                 ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: -distance,
-                  blurRadius: blur,
-                  //inset: isPressd
-                ),
-              ],
-            ),
-            child: RotationTransition(
-              turns: _animation,
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: Image.asset(
-                  "assets/uksw.png",
-                  fit: BoxFit.fill,
+                child: RotationTransition(
+                  turns: _animation,
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset(
+                      "assets/uksw.png",
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+          const SizedBox(
+            height: 16,
+          ),
+          Text(logs)
+        ],
       ),
     );
   }

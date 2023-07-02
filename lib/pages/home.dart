@@ -54,8 +54,6 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     _timer?.cancel();
-    // socketProvider = Provider.of<SocketProvider>(context, listen: false);
-    // socketProvider.socket?.dispose();
     super.dispose();
   }
 
@@ -134,7 +132,7 @@ class _HomeState extends State<Home> {
     var jsonResponse = json.decode(responseString);
     final jobId = jsonResponse['jobId'];
 
-    if(responseString != ''){
+    if (responseString != '') {
       setState(() {
         loadbtnsend = false;
       });
