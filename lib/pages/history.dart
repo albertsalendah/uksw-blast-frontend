@@ -5,6 +5,7 @@ import 'dart:html';
 import 'package:blast_whatsapp/models/history_models.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../navigation/sidenavigationbar.dart';
 import '../screens/table_hisory_pesan.dart';
@@ -75,6 +76,7 @@ class _HistoryState extends State<History> {
         setState(() {
           listHistory =
               jsonData.map((item) => history_models.fromJson(item)).toList();
+          listHistory.sort((a, b) => DateFormat('E MMM dd yyyy').parse(b.tanggal!).compareTo(DateFormat('E MMM dd yyyy').parse(a.tanggal!)));
         });
       } else {
         print('Failed to send data. Error: ${historyResponse.statusCode}');
