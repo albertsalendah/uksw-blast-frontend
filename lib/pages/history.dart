@@ -134,65 +134,74 @@ class _HistoryState extends State<History> {
                       if (index >= listHistory.length) {
                         return null; // Return null for indices out of range
                       }
-                      return ListTile(
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: InkWell(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                      return Column(
+                        children: [
+                          const SizedBox(height: 8,),
+                          Card(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      handleHistorySelection(
+                                          listHistory[index].id_pesan ?? '');
+                                    },
+                                    child: ListTile(
+                                      title: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                                "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(
+                                          "Tanggal Kirim : ${listHistory[index].tanggal}"),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(
-                                        "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
-                                    Text(
-                                        "Tanggal Kirim : ${listHistory[index].tanggal}"),
-                                    // Text(
-                                    //     "ID Pesan : ${listHistory[index].id_pesan}"),
-                                    const Divider(
-                                      color: Colors.grey,
-                                      height: 1,
-                                    )
+                                    IconButton(
+                                        onPressed: () {
+                                          downloadFile(
+                                              listHistory[index].id_pesan ?? '');
+                                        },
+                                        icon: const Icon(
+                                          Icons.download,
+                                          color: Colors.grey,
+                                        )),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.grey),
+                                      onPressed: () {
+                                        showDeleteHirtoryAlertDialog(
+                                            context,
+                                            listHistory[index].id_pesan ?? '',
+                                            listHistory[index].Kategori_Pesan ?? '');
+                                      },
+                                    ),
                                   ],
                                 ),
-                                onTap: () {
-                                  handleHistorySelection(
-                                      listHistory[index].id_pesan ?? '');
-                                },
-                              ),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        downloadFile(
-                                            listHistory[index].id_pesan ?? '');
-                                      },
-                                      icon: const Icon(
-                                        Icons.download,
-                                        color: Colors.grey,
-                                      )),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.grey),
-                                    onPressed: () {
-                                      showDeleteHirtoryAlertDialog(context,
-                                          listHistory[index].id_pesan ?? '',listHistory[index].Kategori_Pesan ?? '');
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 8,),
+                          const Divider(color: Colors.grey,height: 1,)
+                        ],
                       );
                     }),
+              ),
+              const VerticalDivider(
+                width: 20,
+                thickness: 1,
+                indent: 20,
+                endIndent: 0,
+                color: Colors.grey,
               ),
               Expanded(
                 child: Visibility(
@@ -217,7 +226,8 @@ class _HistoryState extends State<History> {
     }
   }
 
-  showDeleteHirtoryAlertDialog(BuildContext context, String id_pesan,String Kat) {
+  showDeleteHirtoryAlertDialog(
+      BuildContext context, String id_pesan, String Kat) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

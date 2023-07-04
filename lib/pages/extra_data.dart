@@ -82,36 +82,55 @@ class _ExtraDataState extends State<ExtraData> {
       return Scaffold(
         appBar: AppBar(title: const Text('File Extra Data')),
         drawer: SideNavigationBar(),
-        body: Row(
-          children: [
-            Flexible(
-              flex: 1,
-              child: ListView.builder(
-                itemCount: filesSisa.length,
-                itemBuilder: (context, index) {
-                  final filename = filesSisa[index];
-                  return ListTile(
-                    title: Text(filename),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Flexible(
+                flex: 1,
+                child: ListView.builder(
+                  itemCount: filesSisa.length,
+                  itemBuilder: (context, index) {
+                    final filename = filesSisa[index];
+                    return Column(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.download),
-                          onPressed: () => downloadFileSisaData(filename),
+                        const SizedBox(
+                          height: 8,
                         ),
-                        IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => {
-                                  showDeleteSisaDataAlertDialog(
-                                      context, filename)
-                                }),
+                        Card(
+                          child: ListTile(
+                            title: Text(filename),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.download),
+                                  onPressed: () => downloadFileSisaData(filename),
+                                ),
+                                IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () => {
+                                          showDeleteSisaDataAlertDialog(
+                                              context, filename)
+                                        }),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        const Divider(
+                          color: Colors.grey,
+                          height: 1,
+                        )
                       ],
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     } else {

@@ -78,41 +78,62 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
 
   @override
   Widget build(BuildContext context) {
-    if(files.isNotEmpty){
+    if (files.isNotEmpty) {
       return Scaffold(
-      appBar: AppBar(title: const Text('Uploaded Excel File')),
-      drawer: SideNavigationBar(),
-      body: Row(
-        children: [
-          Flexible(
-            flex: 1,
-            child: ListView.builder(
-              itemCount: files.length,
-              itemBuilder: (context, index) {
-                final filename = files[index];
-                return ListTile(
-                  title: Text(filename),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.download),
-                        onPressed: () => downloadFile(filename),
-                      ),
-                      IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () =>
-                              {showDeleteAlertDialog(context, filename)}),
-                    ],
-                  ),
-                );
-              },
-            ),
+        appBar: AppBar(title: const Text('Uploaded Excel File')),
+        drawer: SideNavigationBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Flexible(
+                flex: 1,
+                child: ListView.builder(
+                  itemCount: files.length,
+                  itemBuilder: (context, index) {
+                    final filename = files[index];
+                    return Column(
+                      children: [
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Card(
+                          elevation: 3,
+                          child: ListTile(
+                            title: Text(filename),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.download),
+                                  onPressed: () => downloadFile(filename),
+                                ),
+                                IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () => {
+                                          showDeleteAlertDialog(context, filename)
+                                        }),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        const Divider(
+                          color: Colors.grey,
+                          height: 1,
+                        )
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-    }else{
+        ),
+      );
+    } else {
       return Scaffold(
         appBar: AppBar(title: const Text('Uploaded Excel File')),
         drawer: SideNavigationBar(),

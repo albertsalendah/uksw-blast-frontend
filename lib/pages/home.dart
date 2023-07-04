@@ -618,22 +618,41 @@ class _HomeState extends State<Home> {
                         itemCount: activeJobs.length,
                         itemBuilder: (context, index) {
                           final job = activeJobs[index];
-                          return ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    'Mengirim Pesan Ke Progdi : ${job.sendto}'),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Progress: ${job.progress}%'),
-                                Text('Status: ${job.status}'),
-                                Text(job.message)
-                              ],
-                            ),
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Card(
+                                elevation: 3,
+                                child: ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          'Mengirim Pesan Ke Progdi : ${job.sendto}'),
+                                    ],
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Progress: ${job.progress}%'),
+                                      Text('Status: ${job.status}'),
+                                      Text(job.message)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              const Divider(
+                                color: Colors.grey,
+                                height: 1,
+                              )
+                            ],
                           );
                         },
                       ),
