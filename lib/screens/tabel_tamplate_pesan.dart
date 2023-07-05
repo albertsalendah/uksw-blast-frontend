@@ -9,10 +9,11 @@ import '../utils/link.dart';
 class DataTableTemplatePesan extends StatefulWidget {
   final TextEditingController kategoriPesanController;
   final TextEditingController isiPesanController;
+  final Function(String) templatepick;
   const DataTableTemplatePesan(
       {super.key,
       required this.kategoriPesanController,
-      required this.isiPesanController});
+      required this.isiPesanController,required this.templatepick});
 
   @override
   _DataTableTemplatePesan createState() => _DataTableTemplatePesan();
@@ -25,6 +26,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
   final String link = Links().link;
   final TextEditingController editKategoriPesan = TextEditingController();
   final TextEditingController editIsiPesan = TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   List<Template_Pesan> paginatedList = [];
 
@@ -52,6 +54,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
   void goToPage(int page) {
     setState(() {
       currentPage = page;
+      searchController.text = '';
       paginateList();
     });
   }
@@ -117,6 +120,17 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     }
   }
 
+  List<Template_Pesan> get filteredList {
+    if (searchController.text.isEmpty) {
+      return paginatedList;
+    } else {
+      return daftar_template.where((item) {
+        final nama = item.kategoriPesan.toLowerCase();
+        return nama.contains(searchController.text.toLowerCase());
+      }).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (paginatedList.isEmpty) {
@@ -129,10 +143,24 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
       return AlertDialog(
         title: const Text('Daftar Template Pesan'),
         content: SizedBox(
-          width: double.maxFinite,
+          width: MediaQuery.of(context).size.width / 1.7,
           child: SingleChildScrollView(
-            child: Column(             
+            child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Search',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
                 // Table Header
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -162,13 +190,13 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                 ),
 
                 // Table Rows
-                if (paginatedList.isNotEmpty)
+                if (filteredList.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: paginatedList.length,
+                    itemCount: filteredList.length,
                     itemBuilder: (context, index) {
-                      final item = paginatedList[index];
+                      final item = filteredList[index];
                       return Container(
                         padding: const EdgeInsets.all(10),
                         child: Row(
@@ -181,6 +209,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                       item.kategoriPesan;
                                   widget.isiPesanController.text =
                                       item.isiPesan;
+                                    widget.templatepick(item.isiPesan);
                                   Navigator.pop(context);
                                 },
                                 child: Row(
@@ -212,12 +241,16 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                             daftar_template[index];
                                         _showUpdateDialog(updatedItem);
                                       },
-                                      icon: const Icon(Icons.edit,color: Colors.grey,)),
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        color: Colors.grey,
+                                      )),
                                   const SizedBox(
                                     width: 8,
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete,color: Colors.grey),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.grey),
                                     onPressed: () {
                                       deleteTemplatePesan(
                                           daftar_template[index].id);

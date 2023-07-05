@@ -27,6 +27,8 @@ class _HistoryState extends State<History> {
   String link = Links().link;
   List<history_models> listpesan = [];
   Timer? _timer;
+  TextEditingController searchController = TextEditingController();
+
 
   void handleHistorySelection(String idPesan) {
     getlistpesan(idPesan);
@@ -62,6 +64,7 @@ class _HistoryState extends State<History> {
       String responseString = await response.stream.bytesToString();
       dynamic parsedData = json.decode(responseString);
       print(parsedData);
+      searchController.clear();
       fetchData();
     } else {
       print(response.reasonPhrase);
@@ -119,6 +122,19 @@ class _HistoryState extends State<History> {
     super.dispose();
   }
 
+  List<history_models> get filteredList {
+    if (searchController.text.isEmpty) {
+      return listHistory;
+    } else {
+      return listHistory.where((item) {
+        final Kategori_Pesan = item.Kategori_Pesan?.toLowerCase() ?? '';
+        final tanggal = item.tanggal?.toLowerCase() ?? '';
+        return Kategori_Pesan.contains(searchController.text.toLowerCase()) ||
+            tanggal.contains(searchController.text.toLowerCase());
+      }).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (listHistory.isNotEmpty) {
@@ -130,73 +146,93 @@ class _HistoryState extends State<History> {
           child: Row(
             children: [
               Expanded(
-                child: ListView.builder(
-                    itemCount: listHistory.length,
-                    itemBuilder: (ctx, index) {
-                      if (index >= listHistory.length) {
-                        return null; // Return null for indices out of range
-                      }
-                      return Column(
-                        children: [
-                          const SizedBox(height: 8,),
-                          Card(
-                            child: Row(
+                child: Column(
+                  children: [
+                    Padding(
+                    padding: const EdgeInsets.only(top: 10,bottom: 10),
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Search',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: filteredList.length,
+                          itemBuilder: (ctx, index) {
+                            if (index >= filteredList.length) {
+                              return null; // Return null for indices out of range
+                            }
+                            return Column(
                               children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () {
-                                      handleHistorySelection(
-                                          listHistory[index].id_pesan ?? '');
-                                    },
-                                    child: ListTile(
-                                      title: Row(
+                                const SizedBox(height: 8,),
+                                Card(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            handleHistorySelection(
+                                                filteredList[index].id_pesan ?? '');
+                                          },
+                                          child: ListTile(
+                                            title: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                      "Kategori Pesan : ${filteredList[index].Kategori_Pesan}"),
+                                                ),
+                                              ],
+                                            ),
+                                            subtitle: Text(
+                                                "Tanggal Kirim : ${filteredList[index].tanggal}"),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
-                                          Expanded(
-                                            child: Text(
-                                                "Kategori Pesan : ${listHistory[index].Kategori_Pesan}"),
+                                          IconButton(
+                                              onPressed: () {
+                                                downloadFile(
+                                                    filteredList[index].id_pesan ?? '');
+                                              },
+                                              icon: const Icon(
+                                                Icons.download,
+                                                color: Colors.grey,
+                                              )),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete,
+                                                color: Colors.grey),
+                                            onPressed: () {
+                                              showDeleteHirtoryAlertDialog(
+                                                  context,
+                                                  filteredList[index].id_pesan ?? '',
+                                                  filteredList[index].Kategori_Pesan ?? '');
+                                            },
                                           ),
                                         ],
                                       ),
-                                      subtitle: Text(
-                                          "Tanggal Kirim : ${listHistory[index].tanggal}"),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                        onPressed: () {
-                                          downloadFile(
-                                              listHistory[index].id_pesan ?? '');
-                                        },
-                                        icon: const Icon(
-                                          Icons.download,
-                                          color: Colors.grey,
-                                        )),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete,
-                                          color: Colors.grey),
-                                      onPressed: () {
-                                        showDeleteHirtoryAlertDialog(
-                                            context,
-                                            listHistory[index].id_pesan ?? '',
-                                            listHistory[index].Kategori_Pesan ?? '');
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                const SizedBox(height: 8,),
+                                const Divider(color: Colors.grey,height: 1,)
                               ],
-                            ),
-                          ),
-                          const SizedBox(height: 8,),
-                          const Divider(color: Colors.grey,height: 1,)
-                        ],
-                      );
-                    }),
+                            );
+                          }),
+                    ),
+                  ],
+                ),
               ),
               const VerticalDivider(
                 width: 20,

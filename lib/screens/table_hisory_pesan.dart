@@ -13,8 +13,8 @@ class DataTablePesan extends StatefulWidget {
 class _DataTablePesanState extends State<DataTablePesan> {
   final int rowsPerPage = 20;
   int currentPage = 0;
-
   List<history_models> paginatedList = [];
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -47,8 +47,22 @@ class _DataTablePesanState extends State<DataTablePesan> {
   void goToPage(int page) {
     setState(() {
       currentPage = page;
+      searchController.text = '';
       paginateList();
     });
+  }
+
+  List<history_models> get filteredList {
+    if (searchController.text.isEmpty) {
+      return paginatedList;
+    } else {
+      return widget.listPesan.where((item) {
+        final nama = item.Nama?.toLowerCase() ?? '';
+        final noHandphone = item.No_Handphone?.toLowerCase() ?? '';
+        return nama.contains(searchController.text.toLowerCase()) ||
+            noHandphone.contains(searchController.text.toLowerCase());
+      }).toList();
+    }
   }
 
   @override
@@ -59,6 +73,20 @@ class _DataTablePesanState extends State<DataTablePesan> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10,bottom: 10),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Search',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
                 // Table Header
                 Container(
                   decoration: BoxDecoration(
@@ -69,37 +97,37 @@ class _DataTablePesanState extends State<DataTablePesan> {
                     ),
                   ),
                   padding: const EdgeInsets.all(10),
-                  child: Row(
+                  child: const Row(
                     children: [
                       // Add headers for each column
                       Expanded(
                         flex: 1,
-                        child: Text('Nama'),
+                        child: Center(child: Text('Nama')),
                       ),
                       Expanded(
                         flex: 1,
-                        child: Text('No Handphone'),
+                        child: Center(child: Text('No Handphone')),
                       ),
                       Expanded(
                         flex: 1,
-                        child: Text('Kategori Pesan'),
+                        child: Center(child: Text('Kategori Pesan')),
                       ),
                       Expanded(
                         flex: 1,
-                        child: Text('Status Pesan'),
+                        child: Center(child: Text('Status Pesan')),
                       ),
                     ],
                   ),
                 ),
 
                 // Table Rows
-                if (paginatedList.isNotEmpty)
+                if (filteredList.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: paginatedList.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredList.length,
                     itemBuilder: (context, index) {
-                      final item = paginatedList[index];
+                      final item = filteredList[index];
                       final isEven = index % 2 == 0;
                       final backgroundColor =
                           isEven ? Colors.grey[200] : Colors.white;
@@ -121,19 +149,49 @@ class _DataTablePesanState extends State<DataTablePesan> {
                             // Add data for each column
                             Expanded(
                               flex: 1,
-                              child: Text(item.Nama ?? ''),
+                              child: ExpandableText(
+                                item.Nama ?? '',
+                                expandText: 'show more',
+                                collapseText: 'show less',
+                                maxLines: 2,
+                                linkColor: Colors.blue,
+                              ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(item.No_Handphone ?? ''),
+                              child: Center(
+                                child: ExpandableText(
+                                  item.No_Handphone ?? '',
+                                  expandText: 'show more',
+                                  collapseText: 'show less',
+                                  maxLines: 2,
+                                  linkColor: Colors.blue,
+                                ),
+                              ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(item.Kategori_Pesan ?? ''),
+                              child: Center(
+                                child: ExpandableText(
+                                  item.Kategori_Pesan ?? '',
+                                  expandText: 'show more',
+                                  collapseText: 'show less',
+                                  maxLines: 2,
+                                  linkColor: Colors.blue,
+                                ),
+                              ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(item.Status_Pesan ?? ''),
+                              child: Center(
+                                child: ExpandableText(
+                                  item.Status_Pesan ?? '',
+                                  expandText: 'show more',
+                                  collapseText: 'show less',
+                                  maxLines: 2,
+                                  linkColor: Colors.blue,
+                                ),
+                              ),
                             ),
                           ],
                         ),

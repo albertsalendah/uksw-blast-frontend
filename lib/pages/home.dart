@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:blast_whatsapp/models/progdi_models.dart';
 import 'package:blast_whatsapp/models/template_pesan.dart';
+import 'package:blast_whatsapp/screens/messageCard.dart';
 import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/socket/socket_provider.dart';
 import 'package:blast_whatsapp/utils/link.dart';
@@ -16,6 +17,7 @@ import 'package:http/http.dart' as http;
 import '../screens/tabel_tamplate_pesan.dart';
 import '../utils/SessionManager.dart';
 import '../utils/config.dart';
+import 'package:mime/mime.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -36,12 +38,15 @@ class _HomeState extends State<Home> {
   late SocketProvider socketProvider;
   List<ProgdiModels> programDataList = [];
   String selectedKodeProgdi = '';
+  String selectedNamaProgdi = '';
   List<String> listProgdi = [];
   List<Template_Pesan> daftar_template = [];
   Timer? _timer;
   bool isLoading = false;
   String restotalNomor = '';
   bool loadbtnsend = false;
+  Uint8List? imagebytes;
+  String displayMessage = '';
 
   @override
   void initState() {
@@ -193,6 +198,12 @@ class _HomeState extends State<Home> {
       List<PlatformFile> file = result.files;
       setState(() {
         files = file;
+        String? mimeType = lookupMimeType(files[0].name);
+        if (mimeType?.startsWith('image') == true) {
+          imagebytes = files[0].bytes;
+        } else {
+          print("file bukan gambar");
+        }
       });
     }
   }
@@ -260,10 +271,17 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void templatePicked(String item){
+    setState(() {
+      displayMessage = item;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     setState(() {
       loadProgramData();
+      //if(messageController.text.isNotEmpty){}
     });
     final activeJobs = jobs.where((job) => job.status != 'completed').toList();
     return Scaffold(
@@ -274,325 +292,390 @@ class _HomeState extends State<Home> {
         child: Row(
           children: [
             Expanded(
-              child: ListView(
-                children: [
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          await daftarNomor();
-                        },
-                        child: const Row(
-                          children: [
-                            Icon(Icons.contact_page, color: Colors.grey),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text("Pilih Excel File .xlsx | "),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      if (listNohp.isNotEmpty)
-                        Expanded(
-                          child: Row(children: [
-                            Expanded(
-                                child: Text(
-                              listNohp[0].name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            )),
-                            IconButton(
-                              icon:
-                                  const Icon(Icons.delete, color: Colors.grey),
-                              onPressed: () => deleteExcelFile(0),
-                            )
-                          ]),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          await pickFiles();
-                        },
-                        child: const Row(
-                          children: [
-                            Icon(Icons.image, color: Colors.grey),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text("Pilih File Untuk Dikirim | "),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      if (files.isNotEmpty)
-                        Expanded(
-                          child: Row(children: [
-                            Expanded(
-                                child: Text(
-                              files[0].name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            )),
-                            IconButton(
-                              icon:
-                                  const Icon(Icons.delete, color: Colors.grey),
-                              onPressed: () => deleteFile(0),
-                            )
-                          ]),
-                        )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  TextField(
-                    maxLines: 1,
-                    controller: kategoriPesan,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(),
-                        ),
-                        contentPadding: EdgeInsets.all(10),
-                        labelText: 'Kategori Pesan'),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          minLines: 1,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          textInputAction: TextInputAction.newline,
-                          controller: messageController,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(),
+              child: Stack(children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.6,
+                  child: ListView(children: [
+                    if (displayMessage.isNotEmpty)
+                      MessageCard(
+                        message: displayMessage,
+                        imagebytes: imagebytes,
+                      )
+                  ]),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        if (listNohp.isNotEmpty)
+                          Expanded(
+                            child: Row(children: [
+                              Card(
+                                color: const Color.fromRGBO(0, 167, 131, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(150),
+                                ),
+                                elevation: 3,
+                                child: const IconButton(
+                                    onPressed: null,
+                                    icon: Icon(
+                                      Icons.contact_page,
+                                      color: Colors.white,
+                                    )),
                               ),
-                              contentPadding: EdgeInsets.all(10),
-                              labelText: 'Pesan'),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                listNohp[0].name,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.grey),
+                                onPressed: () => deleteExcelFile(0),
+                              )
+                            ]),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        if (files.isNotEmpty)
+                          Expanded(
+                            child: Row(children: [
+                              Card(
+                                color: const Color.fromRGBO(0, 167, 131, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(150),
+                                ),
+                                elevation: 3,
+                                child: const IconButton(
+                                    onPressed: null,
+                                    icon: Icon(
+                                      Icons.image,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                files[0].name,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.grey),
+                                onPressed: () => deleteFile(0),
+                              )
+                            ]),
+                          )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Card(
+                            color: const Color.fromRGBO(0, 167, 131, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(150),
+                            ),
+                            elevation: 3,
+                            child: IconButton(
+                                onPressed: () {
+                                  showListProgdi(context);
+                                },
+                                icon: const Icon(
+                                  Icons.list,
+                                  color: Colors.white,
+                                ))),
+                        const SizedBox(
+                          width: 8,
                         ),
-                      ),
-                      //const SizedBox(width: 8,),
-                      IconButton(
-                          onPressed: () async {
-                            if (kategoriPesan.text.isNotEmpty &&
-                                messageController.text.isNotEmpty) {
-                              if (await tambahTemplatePesan(
-                                  kategoriPesan.text, messageController.text)) {
-                                // ignore: use_build_context_synchronously
-                                NOTIF_SCREEN.show(context, "Success",
-                                    "Template Pesan Berhasil Disimpan");
-                              } else {
-                                // ignore: use_build_context_synchronously
-                                NOTIF_SCREEN.show(context, "Failed",
-                                    "Template Pesan Gagal Disimpan");
-                              }
-                            } else {
-                              NOTIF_SCREEN.show(context, "Error",
-                                  "Kategori Pesan dan Pesan Tidak Boleh Kosong");
-                            }
-                          },
-                          icon: const Icon(Icons.add_comment,
-                              color: Colors.grey)),
-                      //const SizedBox(width: 8,),
-                      IconButton(
-                          onPressed: () async {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DataTableTemplatePesan(
-                                    //daftar_template: daftar_template,
-                                    kategoriPesanController: kategoriPesan,
-                                    isiPesanController: messageController);
-                              },
-                            );
-                          },
-                          icon: const Icon(Icons.list, color: Colors.grey)),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  InputDecorator(
-                    decoration:
-                        const InputDecoration(border: OutlineInputBorder()),
-                    child: SizedBox(
-                      height: 15,
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          menuMaxHeight: 300,
-                          value: selectedYear,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedYear = newValue!;
-                            });
-                          },
-                          items: List<DropdownMenuItem<String>>.generate(
-                            86, // Number of years from 2015 to 2100
-                            (index) {
-                              final startYear = 2012 + index;
-                              final endYear = 2013 + index;
-                              final yearRange = '$startYear-$endYear';
-                              return DropdownMenuItem<String>(
-                                value: yearRange,
-                                child: Text(yearRange),
+                        Text(selectedNamaProgdi.isNotEmpty
+                            ? '$selectedNamaProgdi ($selectedKodeProgdi)'
+                            : 'Daftar Program Studi')
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Card(
+                          color: const Color.fromRGBO(0, 167, 131, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(150),
+                          ),
+                          elevation: 3,
+                          child: PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.date_range,
+                              size: 24,
+                              color: Colors.white,
+                            ),
+                            itemBuilder: (BuildContext context) {
+                              return List<PopupMenuEntry<String>>.generate(
+                                86, // Number of years from 2015 to 2100
+                                (index) {
+                                  final startYear = 2012 + index;
+                                  final endYear = 2013 + index;
+                                  final yearRange = '$startYear-$endYear';
+                                  return PopupMenuItem<String>(
+                                    value: yearRange,
+                                    child: Text(yearRange),
+                                  );
+                                },
                               );
+                            },
+                            initialValue: selectedYear,
+                            onSelected: (String? newValue) {
+                              setState(() {
+                                selectedYear = newValue!;
+                              });
                             },
                           ),
                         ),
-                      ),
+                        const Text("Tahun Ajaran "),
+                        Text(selectedYear)
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownSearch<String>(
-                          items: listProgdi, //List.generate(50, (i) => i),
-                          onChanged: (value) {
-                            setState(() {
-                              programDataList.forEach((element) {
-                                if (element.namaProgdi == value) {
-                                  selectedKodeProgdi = element.kodeProgdi;
-                                }
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Card(
+                          color: const Color.fromRGBO(0, 167, 131, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(150),
+                          ),
+                          elevation: 3,
+                          child: PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.list,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            onSelected: (value) {
+                              setState(() {
+                                selectedValue =
+                                    value; // Update the selected value
                               });
-                            });
-                          },
-                          dropdownBuilder: (context, selectedItem) => Text(
-                              (selectedKodeProgdi.isNotEmpty)
-                                  ? selectedItem ?? "Progdi"
-                                  : "Progdi"),
-                          popupProps: PopupProps.menu(
-                            showSearchBox: true,
-                            title: const Text('Daftar Progdi'),
-                            itemBuilder: (context, item, isSelected) =>
-                                ListTile(
-                              title: Column(
-                                children: [
-                                  Text(
-                                    item,
-                                    style: const TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                            },
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: 'Belum',
+                                child: Text('Belum Registrasi Ulang'),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'Diterima',
+                                child:
+                                    Text('Diterima (Sudah Registrasi Ulang)'),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'All',
+                                child: Text(
+                                    'All (Diterima & Belum Registrasi Ulang)'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          selectedValue == 'All'
+                              ? 'All (Diterima & Belum Registrasi Ulang)'
+                              : selectedValue == 'Belum'
+                                  ? 'Belum Registrasi Ulang'
+                                  : selectedValue == 'Diterima'
+                                      ? 'Diterima (Sudah Registrasi Ulang)'
+                                      : 'Status Registrasi',
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Visibility(
+                          visible: !isLoading,
+                          replacement: const CircularProgressIndicator(),
+                          child: Card(
+                            color: const Color.fromRGBO(0, 167, 131, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(150),
+                            ),
+                            elevation: 3,
+                            child: IconButton(
+                              onPressed: () async {
+                                if (selectedKodeProgdi.isNotEmpty) {
+                                  await checkTotalMahasiswa();
+                                  if (restotalNomor.isNotEmpty && !isLoading) {
+                                    // ignore: use_build_context_synchronously
+                                    NOTIF_SCREEN.show(context, "Success",
+                                        "Total Nomor Yang Ditemukan : $restotalNomor");
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    NOTIF_SCREEN.show(context, "Failed",
+                                        "Gagal Mengambil Data Dari Server");
+                                  }
+                                } else {
+                                  NOTIF_SCREEN.show(context, "Error",
+                                      "Silahkan Pilih Progdi");
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.numbers,
+                                color: Colors.white,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Visibility(
-                        visible: !isLoading,
-                        replacement: const CircularProgressIndicator(),
-                        child: IconButton(
-                          onPressed: () async {
-                            await checkTotalMahasiswa();
-                            if (restotalNomor.isNotEmpty && !isLoading) {
-                              // ignore: use_build_context_synchronously
-                              NOTIF_SCREEN.show(context, "Success",
-                                  "Total Nomor Yang Ditemukan : $restotalNomor");
-                            } else {
-                              // ignore: use_build_context_synchronously
-                              NOTIF_SCREEN.show(context, "Failed",
-                                  "Gagal Mengambil Data Dari Server");
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.numbers,
-                            color: Colors.grey,
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        const Text("Cek Total Nomor Hp Di API")
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    // IntrinsicWidth(
+                    //   child: TextField(
+                    //     maxLines: 1,
+                    //     controller: kategoriPesan,
+                    //   ),
+                    // ),
+                    TextField(
+                      decoration: const InputDecoration(hintText: 'Kategori Pesan'),
+                      maxLines: 1,
+                      controller: kategoriPesan,
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Card(
+                      elevation: 3,
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  displayMessage = value;
+                                });
+                              },
+                              minLines: 1,
+                              maxLines: 5,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              controller: messageController,
+                              decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.attachment),
+                                    onPressed: () async {
+                                      await pickFiles();
+                                    },
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderSide: BorderSide(),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(10),
+                                  labelText: 'Pesan'),
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  InputDecorator(
-                    decoration:
-                        const InputDecoration(border: OutlineInputBorder()),
-                    child: SizedBox(
-                      height: 15,
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: selectedValue,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedValue = newValue!;
-                            });
-                          },
-                          items: const [
-                            DropdownMenuItem<String>(
-                              value: 'Belum',
-                              child: Text('Belum Registrasi Ulang'),
+                          IconButton(
+                              onPressed: () async {
+                                await daftarNomor();
+                              },
+                              icon: const Icon(Icons.contact_page,
+                                  color: Colors.grey)),
+                          IconButton(
+                              onPressed: () async {
+                                if (kategoriPesan.text.isNotEmpty &&
+                                    messageController.text.isNotEmpty) {
+                                  if (await tambahTemplatePesan(
+                                      kategoriPesan.text,
+                                      messageController.text)) {
+                                    // ignore: use_build_context_synchronously
+                                    NOTIF_SCREEN.show(context, "Success",
+                                        "Template Pesan Berhasil Disimpan");
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    NOTIF_SCREEN.show(context, "Failed",
+                                        "Template Pesan Gagal Disimpan");
+                                  }
+                                } else {
+                                  NOTIF_SCREEN.show(context, "Error",
+                                      "Kategori Pesan dan Pesan Tidak Boleh Kosong");
+                                }
+                              },
+                              icon: const Icon(Icons.add_comment,
+                                  color: Colors.grey)),
+                          //const SizedBox(width: 8,),
+                          IconButton(
+                            icon: const Icon(Icons.list, color: Colors.grey),
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return DataTableTemplatePesan(
+                                      kategoriPesanController: kategoriPesan,
+                                      isiPesanController: messageController,templatepick: templatePicked);
+                                },
+                              );
+                            },
+                          ),
+                          Visibility(
+                            visible: !loadbtnsend,
+                            replacement: const CircularProgressIndicator(),
+                            child: IconButton(
+                              icon: const Icon(Icons.send, color: Colors.grey),
+                              onPressed: () async {
+                                if (messageController.text.isNotEmpty &&
+                                    selectedKodeProgdi.isNotEmpty &&
+                                    kategoriPesan.text.isNotEmpty) {
+                                  await sendPostRequest();
+                                } else {
+                                  popUp(context,
+                                      "Message & Progdi Tidak Boleh Kosong");
+                                }
+                                setState(() {
+                                  messageController.text = '';
+                                  selectedYear = '2023-2024';
+                                  selectedValue = 'All';
+                                  selectedKodeProgdi = '';
+                                  kategoriPesan.text = '';
+                                  files = [];
+                                  listNohp = [];
+                                });
+                              },
                             ),
-                            DropdownMenuItem<String>(
-                              value: 'Diterima',
-                              child: Text('Diterima (Sudah Registrasi Ulang)'),
-                            ),
-                            DropdownMenuItem<String>(
-                              value: 'All',
-                              child: Text('All'),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Visibility(
-                    visible: !loadbtnsend,
-                    replacement: const LinearProgressIndicator(),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (messageController.text.isNotEmpty &&
-                            selectedKodeProgdi.isNotEmpty &&
-                            kategoriPesan.text.isNotEmpty) {
-                          await sendPostRequest();
-                        } else {
-                          popUp(context, "Message & Progdi Tidak Boleh Kosong");
-                        }
-                        setState(() {
-                          messageController.text = '';
-                          selectedYear = '2023-2024';
-                          selectedValue = 'All';
-                          selectedKodeProgdi = '';
-                          kategoriPesan.text = '';
-                          files = [];
-                          listNohp = [];
-                        });
-                      },
-                      child: const Text('Send Request'),
+                    const SizedBox(
+                      height: 16,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ]),
             ),
             Visibility(
               visible: activeJobs.isNotEmpty,
@@ -610,9 +693,6 @@ class _HomeState extends State<Home> {
               child: Expanded(
                 child: Column(
                   children: [
-                    const Center(
-                      child: Text("Jangan Direfresh!!!"),
-                    ),
                     Expanded(
                       child: ListView.builder(
                         itemCount: activeJobs.length,
@@ -664,6 +744,64 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
+    );
+  }
+
+  showListProgdi(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Daftar Program Studi'),
+          content: SizedBox(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 2,
+            child: DropdownSearch<String>(
+              items: listProgdi, //List.generate(50, (i) => i),
+              onChanged: (value) {
+                setState(() {
+                  programDataList.forEach((element) {
+                    if (element.namaProgdi == value) {
+                      selectedKodeProgdi = element.kodeProgdi;
+                      selectedNamaProgdi = element.namaProgdi;
+                    }
+                  });
+                });
+              },
+              dropdownBuilder: (context, selectedItem) => Text(
+                  (selectedKodeProgdi.isNotEmpty)
+                      ? selectedItem ?? "Progdi"
+                      : "Progdi"),
+              popupProps: PopupProps.menu(
+                showSearchBox: true,
+                title: const Text('Daftar Progdi'),
+                itemBuilder: (context, item, isSelected) => ListTile(
+                  title: Column(
+                    children: [
+                      Text(
+                        item,
+                        style: const TextStyle(
+                            fontSize: 14.0, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

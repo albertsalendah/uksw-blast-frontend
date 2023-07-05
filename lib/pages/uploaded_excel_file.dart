@@ -20,6 +20,7 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
   List<String> filesSisa = [];
   final String link = Links().link;
   Timer? _timer;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -71,8 +72,20 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
       print('File deleted: $filename');
       // Refresh the file list
       fetchFileList();
+      searchController.text = '';
     } else {
       print('File deletion failed: $filename');
+    }
+  }
+
+  List<String> get filteredList {
+    if (searchController.text.isEmpty) {
+      return files;
+    } else {
+      return files.where((item) {
+        final nama = item.toLowerCase();
+        return nama.contains(searchController.text.toLowerCase());
+      }).toList();
     }
   }
 
@@ -84,14 +97,28 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
         drawer: SideNavigationBar(),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Row(
+          child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Search',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
               Flexible(
                 flex: 1,
                 child: ListView.builder(
-                  itemCount: files.length,
+                  itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    final filename = files[index];
+                    final filename = filteredList[index];
                     return Column(
                       children: [
                         const SizedBox(
@@ -111,7 +138,8 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
                                 IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () => {
-                                          showDeleteAlertDialog(context, filename)
+                                          showDeleteAlertDialog(
+                                              context, filename)
                                         }),
                               ],
                             ),

@@ -20,6 +20,7 @@ class _ExtraDataState extends State<ExtraData> {
   List<String> filesSisa = [];
   final String link = Links().link;
   Timer? _timer;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -71,8 +72,20 @@ class _ExtraDataState extends State<ExtraData> {
       print('File deleted: $filename');
       // Refresh the file list
       fetchFileListSisa();
+      searchController.text = '';
     } else {
       print('File deletion failed: $filename');
+    }
+  }
+
+  List<String> get filteredList {
+    if (searchController.text.isEmpty) {
+      return filesSisa;
+    } else {
+      return filesSisa.where((item) {
+        final nama = item.toLowerCase();
+        return nama.contains(searchController.text.toLowerCase());
+      }).toList();
     }
   }
 
@@ -89,9 +102,9 @@ class _ExtraDataState extends State<ExtraData> {
               Flexible(
                 flex: 1,
                 child: ListView.builder(
-                  itemCount: filesSisa.length,
+                  itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    final filename = filesSisa[index];
+                    final filename = filteredList[index];
                     return Column(
                       children: [
                         const SizedBox(
