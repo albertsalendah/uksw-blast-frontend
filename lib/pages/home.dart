@@ -232,6 +232,7 @@ class _HomeState extends State<Home> {
   void deleteFile(int index) {
     setState(() {
       files.removeAt(index);
+      imagebytes = null;
     });
   }
 
@@ -296,7 +297,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 1.6,
                   child: ListView(children: [
-                    if (displayMessage.isNotEmpty)
+                    if (messageController.text.isNotEmpty)
                       MessageCard(
                         message: displayMessage,
                         imagebytes: imagebytes,
