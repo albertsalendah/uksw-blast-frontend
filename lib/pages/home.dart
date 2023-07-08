@@ -79,12 +79,12 @@ class _HomeState extends State<Home> {
     setState(() {
       jobs = job;
     });
-    for (var element in jobs) {
-      if (element.status == 'error') {
-        NOTIF_SCREEN().popUpError(
-            context, MediaQuery.of(context).size.width / 3, element.message);
-      }
-    }
+    // for (var element in jobs) {
+    //   if (element.status == 'error') {
+    //     NOTIF_SCREEN().popUpError(
+    //         context, MediaQuery.of(context).size.width / 3, element.message);
+    //   }
+    // }
   }
 
   @override
