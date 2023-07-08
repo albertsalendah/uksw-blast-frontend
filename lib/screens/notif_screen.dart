@@ -1,28 +1,34 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 
 // ignore: camel_case_types
 class NOTIF_SCREEN {
-  static void show(BuildContext context, String title, String content) {
-    showDialog(
+  popUpError(BuildContext context, w,String text) {
+    AwesomeDialog(width: w,
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Wrap(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(child: Text(title)),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Center(child: Text(content)),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
+      showCloseIcon: true,
+      closeIcon: const Icon(
+        Icons.close_rounded,
+      ),
+      autoHide: const Duration(seconds: 3),
+      animType: AnimType.scale,
+      dialogType: DialogType.error,
+      title: 'ERROR',
+      desc: text,
+    ).show();
+  }
+  popUpSuccess(BuildContext context, w,String text) {
+    AwesomeDialog(width: w,
+      context: context,
+      showCloseIcon: true,
+      closeIcon: const Icon(
+        Icons.close_rounded,
+      ),
+      autoHide: const Duration(seconds: 3),
+      animType: AnimType.scale,
+      dialogType: DialogType.success,
+      title: 'SUCCESS',
+      desc: text,
+    ).show();
   }
 }

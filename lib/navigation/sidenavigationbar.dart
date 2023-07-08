@@ -4,36 +4,61 @@ import 'package:blast_whatsapp/pages/extra_data.dart';
 import 'package:blast_whatsapp/pages/history.dart';
 import 'package:blast_whatsapp/pages/home.dart';
 import 'package:blast_whatsapp/pages/uploaded_excel_file.dart';
+import 'package:blast_whatsapp/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../utils/SessionManager.dart';
 import '../utils/link.dart';
 
-class SideNavigationBar extends StatelessWidget {
-  final List<String> navigationItems = ['Home',"Uploaded Excel File",'Extra Data','History','Logout'];
+class SideNavigationBar extends StatefulWidget {
+  const SideNavigationBar({super.key});
 
+  @override
+  State<SideNavigationBar> createState() => _SideNavigationBarState();
+}
+
+class _SideNavigationBarState extends State<SideNavigationBar> {
+  final List<String> navigationItems = [
+    'Home',
+    "Uploaded Excel File",
+    'Extra Data',
+    'History',
+    'Logout'
+  ];
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView.builder(
-        itemCount: navigationItems.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(navigationItems[index]),
-            onTap: () {
-              Navigator.of(context).pop(); // Close the drawer
-              // Navigate to the selected screen or class
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => buildScreenByIndex(index, context),
+      child: Stack(children: [
+        Image.asset("assets/whatsapp_Back.png",height: MediaQuery.of(context).size.height,width: MediaQuery.of(context).size.width,fit: BoxFit.fitHeight),
+        ListView.separated(
+          itemCount: navigationItems.length,
+          separatorBuilder: (context, index) => Divider(
+            color: Colors.grey[800], // Adjust the color as per your preference
+          ),
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                navigationItems[index],
+                style: TextStyle(
+                  color: Colors.grey[900],
+                  fontSize: 16,
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ),
+              onTap: () {
+                Navigator.of(context).pop(); // Close the drawer
+                // Navigate to the selected screen or class
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => buildScreenByIndex(index, context),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],)
     );
   }
 }
@@ -67,49 +92,98 @@ Widget buildScreenByIndex(int index, BuildContext context) {
       }
       return StatefulBuilder(
         builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Logout'),
-            content: Wrap(
-              children: [
-                Column(
+          return Stack(
+            children: [
+              Image.asset("assets/whatsapp_Back.png",
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover),
+              AlertDialog(
+                contentPadding: EdgeInsets.zero,
+                content: Wrap(
                   children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: logs,
-                          onChanged: (value) {
-                            setState(
-                              () {
-                                logs = !logs;
-                              },
-                            );
-                          },
+                    Align(
+                      alignment: Alignment.center,
+                      child: FractionallySizedBox(
+                        widthFactor: 1.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Config().green,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Logout',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
-                        const Text("Centang Untuk Logout Whatsapp"),
+                      ),
+                    ),
+                    Wrap(
+                      children: [
+                        Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: logs,
+                                    onChanged: (value) {
+                                      setState(
+                                        () {
+                                          logs = !logs;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  const Text("Centang Untuk Logout Whatsapp"),
+                                ],
+                              ),
+                            ),
+                            const Center(
+                                child:
+                                    Text('Are you sure you want to logout?')),
+                          ],
+                        ),
                       ],
                     ),
-                    const Text('Are you sure you want to logout?'),
                   ],
                 ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  if (logs) {
-                    print(logs);
-                    await logout();
-                  }
-                  await SessionManager.logout();
-                },
-                child: const Text('Logout'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      if (logs) {
+                        print(logs);
+                        await logout();
+                      }
+                      await SessionManager.logout();
+                    },
+                    child: const Text('Logout'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ],
               ),
             ],
           );

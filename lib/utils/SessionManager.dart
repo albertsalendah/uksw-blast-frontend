@@ -1,3 +1,6 @@
+// ignore_for_file: file_names
+
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 import 'package:shared_preferences/shared_preferences.dart';

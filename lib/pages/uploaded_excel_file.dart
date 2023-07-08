@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import '../navigation/sidenavigationbar.dart';
+import '../screens/notif_screen.dart';
 import '../utils/SessionManager.dart';
 import '../utils/config.dart';
 import '../utils/link.dart';
@@ -53,6 +58,9 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
       setState(() {
         files = fileList.cast<String>();
       });
+    } else {
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+          "Gagal Mengambil Data Dari Database");
     }
   }
 
@@ -69,12 +77,18 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
     final response =
         await http.delete(Uri.parse('${link}deleteuploadedfile/$filename'));
     if (response.statusCode == 200) {
-      print('File deleted: $filename');
       // Refresh the file list
       fetchFileList();
       searchController.text = '';
+      NOTIF_SCREEN().popUpSuccess(
+          context,
+          MediaQuery.of(context).size.width / 3,
+          "Berhasil Menghapus File $filename Dari Server");
     } else {
-      print('File deletion failed: $filename');
+      NOTIF_SCREEN().popUpSuccess(
+          context,
+          MediaQuery.of(context).size.width / 3,
+          "Gagal Menghapus File $filename Dari Server");
     }
   }
 
@@ -92,110 +106,129 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
   @override
   Widget build(BuildContext context) {
     if (files.isNotEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Uploaded Excel File')),
-        drawer: SideNavigationBar(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: TextField(
-                  controller: searchController,
-                  onChanged: (value) {
-                    setState(() {});
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Search',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+      return Stack(
+        children: [
+          Image.asset("assets/whatsapp_Back.png",
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(title: const Text('Uploaded Excel File')),
+            drawer: const SideNavigationBar(),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Search',
+                          prefixIcon: Icon(Icons.search),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Flexible(
-                flex: 1,
-                child: ListView.builder(
-                  itemCount: filteredList.length,
-                  itemBuilder: (context, index) {
-                    final filename = filteredList[index];
-                    return Column(
-                      children: [
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Card(
-                          elevation: 3,
-                          child: ListTile(
-                            title: Text(filename),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.download),
-                                  onPressed: () => downloadFile(filename),
-                                ),
-                                IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () => {
-                                          showDeleteAlertDialog(
-                                              context, filename)
-                                        }),
-                              ],
+                  Flexible(
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final filename = filteredList[index];
+                        return Column(
+                          children: [
+                            const SizedBox(
+                              height: 8,
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const Divider(
-                          color: Colors.grey,
-                          height: 1,
-                        )
-                      ],
-                    );
-                  },
-                ),
+                            Card(
+                              elevation: 3,
+                              child: ListTile(
+                                title: Text(filename),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.download),
+                                      onPressed: () => downloadFile(filename),
+                                    ),
+                                    IconButton(
+                                        icon: const Icon(Icons.delete),
+                                        onPressed: () => {
+                                              showDeleteAlertDialog(
+                                                  context, filename)
+                                            }),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            const Divider(
+                              color: Colors.grey,
+                              height: 1,
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       );
     } else {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Uploaded Excel File')),
-        drawer: SideNavigationBar(),
-        body: const Center(child: Text("Belum Ada File")),
+      return Stack(
+        children: [
+          Image.asset("assets/whatsapp_Back.png",
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(title: const Text('Uploaded Excel File')),
+            drawer: const SideNavigationBar(),
+            body: const Center(child: Text("Belum Ada File")),
+          ),
+        ],
       );
     }
   }
 
   showDeleteAlertDialog(BuildContext context, String filename) {
-    showDialog(
+    AwesomeDialog(
+      width: MediaQuery.of(context).size.width / 3,
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete'),
-          content: Text('Hapus $filename?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() {
-                  deleteFile(filename);
-                });
-              },
-              child: Text('Delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-          ],
-        );
+      showCloseIcon: true,
+      closeIcon: const Icon(
+        Icons.close_rounded,
+      ),
+      animType: AnimType.scale,
+      dialogType: DialogType.question,
+      title: 'Delete',
+      desc: "Hapus File $filename ?",
+      btnOkOnPress: () {
+        deleteFile(filename);
       },
-    );
+      btnCancelOnPress: () {},
+    ).show();
   }
 }

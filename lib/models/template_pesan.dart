@@ -1,3 +1,4 @@
+// ignore: camel_case_types
 class Template_Pesan {
   final String id;
   final String kategoriPesan;

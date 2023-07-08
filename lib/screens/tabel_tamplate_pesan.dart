@@ -1,10 +1,14 @@
+// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names, use_build_context_synchronously
+
 import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/template_pesan.dart';
 import '../utils/link.dart';
+import 'notif_screen.dart';
 
 class DataTableTemplatePesan extends StatefulWidget {
   final TextEditingController kategoriPesanController;
@@ -13,7 +17,8 @@ class DataTableTemplatePesan extends StatefulWidget {
   const DataTableTemplatePesan(
       {super.key,
       required this.kategoriPesanController,
-      required this.isiPesanController,required this.templatepick});
+      required this.isiPesanController,
+      required this.templatepick});
 
   @override
   _DataTableTemplatePesan createState() => _DataTableTemplatePesan();
@@ -78,8 +83,8 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
         paginateList();
       });
     } else {
-      // Error fetching data
-      print('Failed to fetch messages from MongoDB');
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+          "Gagal Mengambil Data Dari Database");
     }
   }
 
@@ -90,11 +95,14 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
 
     if (response.statusCode == 200) {
       // Data deleted successfully
-      print('Data deleted from MongoDB');
+      NOTIF_SCREEN().popUpSuccess(
+          context,
+          MediaQuery.of(context).size.width / 3,
+          "Berhasil Menghapus Data Dari Database");
       fetchdaftarTemplate();
     } else {
-      // Error deleting data
-      print('Failed to delete data from MongoDB');
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+          "Gagal Menghapus Data Dari Database");
     }
   }
 
@@ -104,7 +112,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
 
     // Send the update request to the backend API
     final response = await http.put(
-      Uri.parse('${link}edit_template_pesan/${id}'),
+      Uri.parse('${link}edit_template_pesan/$id'),
       body: {
         'kategori_pesan': kategoriPesan,
         'isi_pesan': isiPesan,
@@ -112,11 +120,14 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     );
 
     if (response.statusCode == 200) {
+      NOTIF_SCREEN().popUpSuccess(
+          context,
+          MediaQuery.of(context).size.width / 3,
+          "Berhasil Mengubah Data Dari Database");
       fetchdaftarTemplate();
     } else {
-      // Update failed
-      // You can handle the error case based on your requirements
-      print('Update failed: ${response.statusCode}');
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+          "Gagal Mengubah Data Dari Database");
     }
   }
 
@@ -164,6 +175,14 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                 // Table Header
                 Container(
                   padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
                   child: const Row(
                     children: [
                       Expanded(
@@ -193,12 +212,25 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                 if (filteredList.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final item = filteredList[index];
+                      final isEven = index % 2 == 0;
+                      final backgroundColor =
+                          isEven ? Colors.grey[200] : Colors.white;
+                      final borderColor =
+                          isEven ? Colors.grey[400] : Colors.grey[200];
                       return Container(
                         padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: borderColor!,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                          color: backgroundColor,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
@@ -209,7 +241,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                       item.kategoriPesan;
                                   widget.isiPesanController.text =
                                       item.isiPesan;
-                                    widget.templatepick(item.isiPesan);
+                                  widget.templatepick(item.isiPesan);
                                   Navigator.pop(context);
                                 },
                                 child: Row(
@@ -252,8 +284,25 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                     icon: const Icon(Icons.delete,
                                         color: Colors.grey),
                                     onPressed: () {
-                                      deleteTemplatePesan(
-                                          daftar_template[index].id);
+                                      AwesomeDialog(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                3,
+                                        context: context,
+                                        showCloseIcon: true,
+                                        closeIcon: const Icon(
+                                          Icons.close_rounded,
+                                        ),
+                                        animType: AnimType.scale,
+                                        dialogType: DialogType.question,
+                                        title: 'Delete',
+                                        desc: "Hapus ${item.kategoriPesan} ?",
+                                        btnOkOnPress: () {
+                                          deleteTemplatePesan(
+                                              daftar_template[index].id);
+                                        },
+                                        btnCancelOnPress: () {},
+                                      ).show();
                                     },
                                   ),
                                 ],
@@ -270,14 +319,14 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.chevron_left),
+                      icon: const Icon(Icons.chevron_left),
                       onPressed: currentPage > 0
                           ? () => goToPage(currentPage - 1)
                           : null,
                     ),
                     Text('Page ${currentPage + 1}'),
                     IconButton(
-                      icon: Icon(Icons.chevron_right),
+                      icon: const Icon(Icons.chevron_right),
                       onPressed: (currentPage + 1) * rowsPerPage <
                               daftar_template.length
                           ? () => goToPage(currentPage + 1)
@@ -301,38 +350,42 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            title: Text('Update Item'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                children: [
-                  TextField(
-                    controller: editKategoriPesan,
-                    decoration: const InputDecoration(
-                      labelText: 'Kategori Pesan',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextField(
-                    minLines: 1,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    textInputAction: TextInputAction.newline,
-                    controller: editIsiPesan,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(),
+            title: const Text('Update Item'),
+            content: Wrap(
+              children: [
+                SizedBox(
+                  width: double.maxFinite,
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: editKategoriPesan,
+                        decoration: const InputDecoration(
+                          labelText: 'Kategori Pesan',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(),
+                          ),
                         ),
-                        contentPadding: EdgeInsets.all(10),
-                        labelText: 'Isi Pesan'),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      TextField(
+                        minLines: 1,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        textInputAction: TextInputAction.newline,
+                        controller: editIsiPesan,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                            labelText: 'Isi Pesan'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             actions: [
               TextButton(
@@ -342,13 +395,13 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                     Navigator.of(context).pop();
                   });
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
             ],
           ),

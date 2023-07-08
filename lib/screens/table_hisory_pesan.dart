@@ -1,10 +1,12 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:blast_whatsapp/models/history_models.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 
 class DataTablePesan extends StatefulWidget {
   final List<history_models> listPesan;
-  const DataTablePesan({required this.listPesan});
+  const DataTablePesan({super.key, required this.listPesan});
 
   @override
   _DataTablePesanState createState() => _DataTablePesanState();
@@ -74,24 +76,35 @@ class _DataTablePesanState extends State<DataTablePesan> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 10,bottom: 10),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    decoration: const InputDecoration(
-                      labelText: 'Search',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                    color: Colors.white,borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      decoration: const InputDecoration(
+                          labelText: 'Search',
+                          prefixIcon: Icon(Icons.search),
+                          border: InputBorder.none
+                          ),
                     ),
                   ),
                 ),
                 // Table Header
                 Container(
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     border: Border.all(
-                      color: Colors.grey,
+                      color: Colors.white,
                       width: 1.0,
                       style: BorderStyle.solid,
                     ),
@@ -207,13 +220,13 @@ class _DataTablePesanState extends State<DataTablePesan> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(Icons.chevron_left),
+              icon: const Icon(Icons.chevron_left),
               onPressed:
                   currentPage > 0 ? () => goToPage(currentPage - 1) : null,
             ),
             Text('Page ${currentPage + 1}'),
             IconButton(
-              icon: Icon(Icons.chevron_right),
+              icon: const Icon(Icons.chevron_right),
               onPressed:
                   (currentPage + 1) * rowsPerPage < widget.listPesan.length
                       ? () => goToPage(currentPage + 1)

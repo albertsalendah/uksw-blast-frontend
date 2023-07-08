@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, library_prefixes
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../utils/SessionManager.dart';
@@ -30,7 +30,6 @@ class SocketProvider extends ChangeNotifier {
         if (response != null) {
           message = response;
           messages?.call(response);
-          print(message);
         }
       });
 
@@ -104,7 +103,8 @@ class SocketProvider extends ChangeNotifier {
         listJob?.call(jobs);
       });
     } catch (e) {
-      print("Connection To Socket Failed $e");
+      // ignore: avoid_print
+      print(e);
     }
   }
 }

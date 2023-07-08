@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, camel_case_types
+
 class history_models {
   String? id_pesan;
   String? Nama;
@@ -24,13 +26,13 @@ class history_models {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id_pesan'] = this.id_pesan;
-    data['Nama'] = this.Nama;
-    data['No_Handphone'] = this.No_Handphone;
-    data['Kategori_Pesan'] = this.Kategori_Pesan;
-    data['Status_Pesan'] = this.Status_Pesan;
-    data['tanggal'] = this.tanggal;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id_pesan'] = id_pesan;
+    data['Nama'] = Nama;
+    data['No_Handphone'] = No_Handphone;
+    data['Kategori_Pesan'] = Kategori_Pesan;
+    data['Status_Pesan'] = Status_Pesan;
+    data['tanggal'] = tanggal;
     return data;
   }
 }

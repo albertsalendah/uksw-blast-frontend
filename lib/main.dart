@@ -1,8 +1,13 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'package:blast_whatsapp/pages/home.dart';
+import 'package:blast_whatsapp/screens/notif_screen.dart';
 import 'package:blast_whatsapp/utils/SessionManager.dart';
+import 'package:blast_whatsapp/utils/config.dart';
 import 'package:blast_whatsapp/utils/link.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +22,9 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => SocketProvider(),
-      child: MyApp(isLoggedIn: isLoggedIn && !isSessionExpired),
+      child: MaterialApp(
+        home: MyApp(isLoggedIn: isLoggedIn && !isSessionExpired),
+      ),
     ),
   );
 }
@@ -44,6 +51,14 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   String logs = '';
   bool loginbtn = false;
   Timer? _timer;
+  bool pop = false;
+  bool passwordVisible = false;
+  TextEditingController admin = TextEditingController();
+  TextEditingController adminPass = TextEditingController();
+  TextEditingController register_username = TextEditingController();
+  TextEditingController register_userpass = TextEditingController();
+  bool adminpasswordVisible = false;
+  bool register_passwordVisible = false;
 
   @override
   void initState() {
@@ -75,9 +90,6 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     socketProvider.updateQR = handleQR;
     socketProvider.QR = handleQRCode;
     socketProvider.messages = handleLog;
-    // Future.delayed(const Duration(seconds: 5), () {
-    //   setState(() {});
-    // });
   }
 
   Future<void> login() async {
@@ -102,12 +114,17 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       await SessionManager.saveToken(token);
       setState(() {
         loginbtn = false;
+        pop = false;
       });
       window.location.reload();
     } else {
-      final message = jsonDecode(response.body)['message'];
-      loginbtn = false;
-      print('Login failed: $message');
+      final message = await jsonDecode(response.body)['message'];
+      setState(() {
+        loginbtn = false;
+        pop = true;
+      });
+      NOTIF_SCREEN()
+          .popUpError(context, MediaQuery.of(context).size.width / 3, message);
     }
   }
 
@@ -177,44 +194,68 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
     final isLoggedIn = widget.isLoggedIn;
     if (isLoggedIn) {
       if (loading) {
-        return MaterialApp(home: Scaffold(body: Center(child: logo())));
-      } else if (showQR) {
         return MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: Visibility(
-                visible: showQR,
-                child: Card(
-                  elevation: 3,
-                  child: SizedBox(
-                    height: 300,
-                    width: 250,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        QrImageView(
-                          data: qr,
-                          version: QrVersions.auto,
-                          size: 200.0,
+            home: Stack(
+          children: [
+            Image.asset("assets/whatsapp_Back.png",
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover),
+            Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Center(child: logo())),
+          ],
+        ));
+      } else if (showQR && isLoggedIn) {
+        return MaterialApp(
+          home: Stack(
+            children: [
+              Image.asset("assets/whatsapp_Back.png",
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover),
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Center(
+                  child: Visibility(
+                    visible: showQR && isLoggedIn,
+                    child: Card(
+                      elevation: 3,
+                      child: SizedBox(
+                        height: 300,
+                        width: 250,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            QrImageView(
+                              data: qr,
+                              version: QrVersions.auto,
+                              size: 200.0,
+                            ),
+                            const SizedBox(
+                              height: 6,
+                            ),
+                            Text(
+                              logs,
+                              textAlign: TextAlign.center,
+                            )
+                          ],
                         ),
-                        const SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          logs,
-                          textAlign: TextAlign.center,
-                        )
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       } else if (mainmenuV) {
-        return const MaterialApp(
-          home: Scaffold(
+        return MaterialApp(
+          theme: ThemeData(
+              appBarTheme:
+                  const AppBarTheme(color: Color.fromRGBO(0, 167, 131, 1)),
+              primaryColor: const Color.fromRGBO(0, 167, 131, 1)),
+          home: const Scaffold(
             body: Home(),
           ),
         );
@@ -227,69 +268,155 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       }
     } else {
       return MaterialApp(
-        home: Scaffold(
-            body: Center(
-          child: SizedBox(
-            height: 220,
-            width: 300,
-            child: Card(
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      const Center(child: Text("Login")),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        minLines: 1,
-                        keyboardType: TextInputType.name,
-                        maxLines: null,
-                        textInputAction: TextInputAction.newline,
-                        controller: usernameController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(),
+        home: Stack(
+          children: [
+            Image.asset("assets/whatsapp_Back.png",
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover),
+            Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Center(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height / 3.1,
+                    width: MediaQuery.of(context).size.width / 4,
+                    child: Card(
+                        elevation: 3,
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 40,
+                              width: MediaQuery.of(context).size.width / 4,
+                              decoration: BoxDecoration(
+                                color: Config().green,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(4),
+                                    topRight: Radius.circular(4)),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                              ),
+                              child: const Padding(
+                                  padding: EdgeInsets.only(left: 16),
+                                  child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text("LOGIN",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16)))),
                             ),
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: 'Username'),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextField(
-                        minLines: 1,
-                        keyboardType: TextInputType.visiblePassword,
-                        maxLines: null,
-                        textInputAction: TextInputAction.newline,
-                        controller: passController,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(),
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextField(
+                                    minLines: 1,
+                                    keyboardType: TextInputType.name,
+                                    maxLines: null,
+                                    textInputAction: TextInputAction.newline,
+                                    controller: usernameController,
+                                    decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                        ),
+                                        contentPadding: EdgeInsets.all(10),
+                                        labelText: 'Username'),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  TextField(
+                                    keyboardType: TextInputType.visiblePassword,
+                                    maxLines: 1,
+                                    obscureText: !passwordVisible,
+                                    textInputAction: TextInputAction.newline,
+                                    controller: passController,
+                                    decoration: InputDecoration(
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                        ),
+                                        contentPadding: const EdgeInsets.all(10),
+                                        labelText: 'Password',
+                                        suffixIcon: IconButton(
+                                          onPressed: () {
+                                            // Update the state i.e. toogle the state of passwordVisible variable
+                                            setState(() {
+                                              passwordVisible =
+                                                  !passwordVisible;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            // Based on passwordVisible state choose the icon
+                                            passwordVisible
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                            color: Config().green,
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: SizedBox(
+                                            child: Visibility(
+                                              visible: !loginbtn,
+                                              replacement:
+                                                  const CircularProgressIndicator(),
+                                              child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Config().green),
+                                                  onPressed: () async {
+                                                    if (usernameController
+                                                            .text.isNotEmpty &&
+                                                        passController
+                                                            .text.isNotEmpty) {
+                                                      await login();
+                                                    } else {
+                                                      loginbtn = false;
+                                                      NOTIF_SCREEN().popUpError(
+                                                          context,
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              3,
+                                                          "Username & Password Tidak Boleh Kosong");
+                                                    }
+                                                  },
+                                                  child: const Text("Login")),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: TextButton(
+                                            onPressed: () {
+                                              Register();
+                                            },
+                                            child: const Text("Tambah User")),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: 'Password'),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Align(
-                          alignment: Alignment.bottomRight,
-                          child: Visibility(
-                            visible: !loginbtn,
-                            replacement: const CircularProgressIndicator(),
-                            child: ElevatedButton(
-                                onPressed: () async {
-                                  await login();
-                                },
-                                child: const Text("Login")),
-                          ))
-                    ],
+                          ],
+                        )),
                   ),
                 )),
-          ),
-        )),
+          ],
+        ),
       );
     }
   }
@@ -349,5 +476,203 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  Register() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              content: Wrap(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: FractionallySizedBox(
+                      widthFactor: 1.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Config().green,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            topRight: Radius.circular(4),
+                          ),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'Register',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        TextField(
+                          minLines: 1,
+                          keyboardType: TextInputType.name,
+                          maxLines: null,
+                          textInputAction: TextInputAction.newline,
+                          controller: admin,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                              labelText: 'Admin'),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        TextField(
+                          keyboardType: TextInputType.visiblePassword,
+                          maxLines: 1,
+                          obscureText: !adminpasswordVisible,
+                          textInputAction: TextInputAction.newline,
+                          controller: adminPass,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide(),
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                              labelText: 'Admin Password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  // Update the state i.e. toogle the state of passwordVisible variable
+                                  setState(() {
+                                    adminpasswordVisible =
+                                        !adminpasswordVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  // Based on adminpasswordVisible state choose the icon
+                                  adminpasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Config().green,
+                                ),
+                              )),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        TextField(
+                          minLines: 1,
+                          keyboardType: TextInputType.name,
+                          maxLines: null,
+                          textInputAction: TextInputAction.newline,
+                          controller: register_username,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                              labelText: 'New Username'),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        TextField(
+                          keyboardType: TextInputType.visiblePassword,
+                          maxLines: 1,
+                          obscureText: !register_passwordVisible,
+                          textInputAction: TextInputAction.newline,
+                          controller: register_userpass,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide(),
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                              labelText: 'New Password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  // Update the state i.e. toogle the state of register_passwordVisible variable
+                                  setState(() {
+                                    register_passwordVisible =
+                                        !register_passwordVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  // Based on passwordVisible state choose the icon
+                                  register_passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Config().green,
+                                ),
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    if(admin.text.isNotEmpty && adminPass.text.isNotEmpty && register_username.text.isNotEmpty && register_userpass.text.isNotEmpty){
+                      regiteruser();
+                    }else{
+                      NOTIF_SCREEN().popUpError(context,MediaQuery.of(context).size.width /3,"Username & Password Tidak Boleh Kosong");
+                    }
+                  },
+                  child: const Text('Register'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+  Future<void> regiteruser() async {
+    final url = Uri.parse('${link}register');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(
+        {
+          'admin': admin.text,
+          'adminpass': adminPass.text,
+          'username': register_username.text,
+          'password': register_userpass.text,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final message = await jsonDecode(response.body)['message'];
+      Navigator.pop(context);
+      NOTIF_SCREEN()
+          .popUpSuccess(context, MediaQuery.of(context).size.width / 3, message);
+    } else {
+      final message = await jsonDecode(response.body)['message'];
+      Navigator.pop(context);
+      NOTIF_SCREEN()
+          .popUpError(context, MediaQuery.of(context).size.width / 3, message);
+    }
   }
 }
