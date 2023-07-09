@@ -301,517 +301,530 @@ class _HomeState extends State<Home> {
             child: Row(
               children: [
                 Expanded(
-                  child: Stack(children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.6,
-                      child: ListView(children: [
-                        if (messageController.text.isNotEmpty)
-                          MessageCard(
-                            message: displayMessage,
-                            imagebytes: imagebytes,
-                          )
-                      ]),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: CustomScrollView(
+                      slivers: [SliverFillRemaining(
+                        child: Stack(
+                          alignment: Alignment.bottomLeft,
                           children: [
-                            Row(
-                              children: [
-                                if (width < 641)
-                                  Expanded(
-                                    child: Row(children: [
-                                      Card(
-                                        color: Config().green,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(150),
-                                        ),
-                                        elevation: 3,
-                                        child: Center(
-                                          child: IconButton(
-                                            tooltip: 'Cek Progress Pesan',
-                                              onPressed: () {
-                                                showListJobs(context, activeJobs);
-                                              },
-                                              icon: const Icon(
-                                                Icons.message_outlined,
-                                                color: Colors.white,
-                                              )),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text(
-                                        "Cek Progress",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
-                                      ),
-                                    ]),
-                                  ),
-                              ],
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height / 1.6,
+                              child: SingleChildScrollView(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                  if (messageController.text.isNotEmpty)
+                                    MessageCard(
+                                      message: displayMessage,
+                                      imagebytes: imagebytes,
+                                    )
+                                ]),
+                              ),
                             ),
-                            Row(
+                          ),
+                          SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (listNohp.isNotEmpty)
-                                  Expanded(
-                                    child: Row(children: [
-                                      Card(
-                                        color: Config().green,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(150),
-                                        ),
-                                        elevation: 3,
-                                        child: const Center(
-                                          child: IconButton(
-                                              onPressed: null,
-                                              icon: Icon(
-                                                Icons.contact_page,
-                                                color: Colors.white,
-                                              )),
-                                        ),
+                                Row(
+                                  children: [
+                                    if (width < 641)
+                                      Expanded(
+                                        child: Row(children: [
+                                          Card(
+                                            color: Config().green,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(150),
+                                            ),
+                                            elevation: 3,
+                                            child: Center(
+                                              child: IconButton(
+                                                tooltip: 'Cek Progress Pesan',
+                                                  onPressed: () {
+                                                    showListJobs(context, activeJobs);
+                                                  },
+                                                  icon: const Icon(
+                                                    Icons.message_outlined,
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          Text(
+                                            "Cek Progress",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                          ),
+                                        ]),
                                       ),
-                                      const SizedBox(
-                                        height: 16,
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    if (listNohp.isNotEmpty)
+                                      Expanded(
+                                        child: Row(children: [
+                                          Card(
+                                            color: Config().green,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(150),
+                                            ),
+                                            elevation: 3,
+                                            child: const Center(
+                                              child: IconButton(
+                                                  onPressed: null,
+                                                  icon: Icon(
+                                                    Icons.contact_page,
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          Text(
+                                            listNohp[0].name,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete,
+                                                color: Colors.grey),
+                                            onPressed: () => deleteExcelFile(0),
+                                          )
+                                        ]),
                                       ),
-                                      Text(
-                                        listNohp[0].name,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.grey),
-                                        onPressed: () => deleteExcelFile(0),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    if (files.isNotEmpty)
+                                      Expanded(
+                                        child: Row(children: [
+                                          Card(
+                                            color: const Color.fromRGBO(0, 167, 131, 1),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(150),
+                                            ),
+                                            elevation: 3,
+                                            child: const Center(
+                                              child: IconButton(
+                                                  onPressed: null,
+                                                  icon: Icon(
+                                                    Icons.image,
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          Text(
+                                            files[0].name,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete,
+                                                color: Colors.grey),
+                                            onPressed: () => deleteFile(0),
+                                          )
+                                        ]),
                                       )
-                                    ]),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                if (files.isNotEmpty)
-                                  Expanded(
-                                    child: Row(children: [
-                                      Card(
-                                        color: const Color.fromRGBO(0, 167, 131, 1),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(150),
-                                        ),
-                                        elevation: 3,
-                                        child: const Center(
-                                          child: IconButton(
-                                              onPressed: null,
-                                              icon: Icon(
-                                                Icons.image,
-                                                color: Colors.white,
-                                              )),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text(
-                                        files[0].name,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.grey),
-                                        onPressed: () => deleteFile(0),
-                                      )
-                                    ]),
-                                  )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Tooltip(
-                                  message:
-                                      'Pilih --- Jika Ingin Mengirim Lewat FIle Excel(Tidak Boleh Kosong)',
-                                  child: Card(
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Tooltip(
+                                      message:
+                                          'Pilih --- Jika Ingin Mengirim Lewat FIle Excel(Tidak Boleh Kosong)',
+                                      child: Card(
+                                          color: const Color.fromRGBO(0, 167, 131, 1),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(150),
+                                          ),
+                                          elevation: 3,
+                                          child: Center(
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  showListProgdi(context);
+                                                },
+                                                icon: const Icon(
+                                                  Icons.list,
+                                                  color: Colors.white,
+                                                )),
+                                          )),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(selectedKodeProgdi.isNotEmpty
+                                        ? '$selectedNamaProgdi ($selectedKodeProgdi)'
+                                        : 'Daftar Program Studi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Card(
                                       color: const Color.fromRGBO(0, 167, 131, 1),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
                                       child: Center(
-                                        child: IconButton(
-                                            onPressed: () {
-                                              showListProgdi(context);
-                                            },
-                                            icon: const Icon(
-                                              Icons.list,
-                                              color: Colors.white,
-                                            )),
-                                      )),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text(selectedKodeProgdi.isNotEmpty
-                                    ? '$selectedNamaProgdi ($selectedKodeProgdi)'
-                                    : 'Daftar Program Studi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Card(
-                                  color: const Color.fromRGBO(0, 167, 131, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(150),
-                                  ),
-                                  elevation: 3,
-                                  child: Center(
-                                    child: PopupMenuButton<String>(
-                                      tooltip:
-                                          'Pilih Tahun Ajaran (Untuk Mengambil Data Dari API)',
-                                      icon: const Icon(
-                                        Icons.date_range,
-                                        size: 24,
-                                        color: Colors.white,
-                                      ),
-                                      itemBuilder: (BuildContext context) {
-                                        return List<PopupMenuEntry<String>>.generate(
-                                          86, // Number of years from 2015 to 2100
-                                          (index) {
-                                            final startYear = 2012 + index;
-                                            final endYear = 2013 + index;
-                                            final yearRange = '$startYear-$endYear';
-                                            return PopupMenuItem<String>(
-                                              value: yearRange,
-                                              child: Text(yearRange),
+                                        child: PopupMenuButton<String>(
+                                          tooltip:
+                                              'Pilih Tahun Ajaran (Untuk Mengambil Data Dari API)',
+                                          icon: const Icon(
+                                            Icons.date_range,
+                                            size: 24,
+                                            color: Colors.white,
+                                          ),
+                                          itemBuilder: (BuildContext context) {
+                                            return List<PopupMenuEntry<String>>.generate(
+                                              86, // Number of years from 2015 to 2100
+                                              (index) {
+                                                final startYear = 2012 + index;
+                                                final endYear = 2013 + index;
+                                                final yearRange = '$startYear-$endYear';
+                                                return PopupMenuItem<String>(
+                                                  value: yearRange,
+                                                  child: Text(yearRange),
+                                                );
+                                              },
                                             );
                                           },
-                                        );
-                                      },
-                                      initialValue: selectedYear,
-                                      onSelected: (String? newValue) {
-                                        setState(() {
-                                          selectedYear = newValue!;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Text("Tahun Ajaran ",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),),
-                                Text(selectedYear,style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Card(
-                                  color: const Color.fromRGBO(0, 167, 131, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(150),
-                                  ),
-                                  elevation: 3,
-                                  child: Center(
-                                    child: PopupMenuButton<String>(
-                                      tooltip:
-                                          'Status Registrasi Ulang (Jika Mengirim Pesan Melalui File Excel Dibiarkan Tetap All)',
-                                      icon: const Icon(
-                                        Icons.list,
-                                        color: Colors.white,
-                                        size: 24,
+                                          initialValue: selectedYear,
+                                          onSelected: (String? newValue) {
+                                            setState(() {
+                                              selectedYear = newValue!;
+                                            });
+                                          },
+                                        ),
                                       ),
-                                      onSelected: (value) {
-                                        setState(() {
-                                          selectedValue =
-                                              value; // Update the selected value
-                                        });
-                                      },
-                                      itemBuilder: (BuildContext context) =>
-                                          <PopupMenuEntry<String>>[
-                                        const PopupMenuItem<String>(
-                                          value: 'Belum',
-                                          child: Text('Belum Registrasi Ulang'),
+                                    ),
+                                    Text("Tahun Ajaran ",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),),
+                                    Text(selectedYear,style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Card(
+                                      color: const Color.fromRGBO(0, 167, 131, 1),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(150),
+                                      ),
+                                      elevation: 3,
+                                      child: Center(
+                                        child: PopupMenuButton<String>(
+                                          tooltip:
+                                              'Status Registrasi Ulang (Jika Mengirim Pesan Melalui File Excel Dibiarkan Tetap All)',
+                                          icon: const Icon(
+                                            Icons.list,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                          onSelected: (value) {
+                                            setState(() {
+                                              selectedValue =
+                                                  value; // Update the selected value
+                                            });
+                                          },
+                                          itemBuilder: (BuildContext context) =>
+                                              <PopupMenuEntry<String>>[
+                                            const PopupMenuItem<String>(
+                                              value: 'Belum',
+                                              child: Text('Belum Registrasi Ulang'),
+                                            ),
+                                            const PopupMenuItem<String>(
+                                              value: 'Diterima',
+                                              child: Text(
+                                                  'Diterima (Sudah Registrasi Ulang)'),
+                                            ),
+                                            const PopupMenuItem<String>(
+                                              value: 'All',
+                                              child: Text(
+                                                  'All (Diterima & Belum Registrasi Ulang)'),
+                                            ),
+                                          ],
                                         ),
-                                        const PopupMenuItem<String>(
-                                          value: 'Diterima',
-                                          child: Text(
-                                              'Diterima (Sudah Registrasi Ulang)'),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text(
+                                      selectedValue == 'All'
+                                          ? 'All (Diterima & Belum Registrasi Ulang)'
+                                          : selectedValue == 'Belum'
+                                              ? 'Belum Registrasi Ulang'
+                                              : selectedValue == 'Diterima'
+                                                  ? 'Diterima (Sudah Registrasi Ulang)'
+                                                  : 'Status Registrasi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    Visibility(
+                                      visible: !isLoading,
+                                      replacement: const CircularProgressIndicator(),
+                                      child: Card(
+                                        color: const Color.fromRGBO(0, 167, 131, 1),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(150),
                                         ),
-                                        const PopupMenuItem<String>(
-                                          value: 'All',
-                                          child: Text(
-                                              'All (Diterima & Belum Registrasi Ulang)'),
+                                        elevation: 3,
+                                        child: Center(
+                                          child: IconButton(
+                                            tooltip:
+                                                'Untuk Mengecek Total Nomor Handphone Pastikan Memilih Program Studi,Tahun Ajaran,dan Status Registrasi Ulang (Hanya Untuk Cek Total Nomor dari API)',
+                                            onPressed: () async {
+                                              if (selectedKodeProgdi.isNotEmpty) {
+                                                await checkTotalMahasiswa();
+                                                if (restotalNomor.isNotEmpty &&
+                                                    !isLoading) {
+                                                  NOTIF_SCREEN().popUpSuccess(
+                                                      context,
+                                                      MediaQuery.of(context).size.width,
+                                                      "Total Nomor Yang Ditemukan : $restotalNomor");
+                                                } else {
+                                                  NOTIF_SCREEN().popUpError(
+                                                      context,
+                                                      MediaQuery.of(context).size.width,
+                                                      "Gagal Mengambil Data Dari Server");
+                                                }
+                                              } else {
+                                                NOTIF_SCREEN().popUpError(
+                                                    context,
+                                                    MediaQuery.of(context).size.width,
+                                                    "Silahkan Pilih Progdi");
+                                              }
+                                            },
+                                            icon: const Icon(
+                                              Icons.numbers,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                      ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text("Cek Total Nomor HP Di API",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25)),
+                                  elevation: 3,
+                                  color: Colors.white,
+                                  child: IntrinsicWidth(
+                                    child: Tooltip(
+                                      message:
+                                          "Untuk Memudahkan Pencarian History Pesan Yang Dikirim.\nJika Mengirim Pesan Dengan File Excel Maka Kategori Pesan Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Nama File Excel)"
+                                          "\nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika.xlxs = File Excel => 'Menjadi Open Day_Teknik Informatika.xlxs'"
+                                          "\nJika Mengirim Pesan Menggunakan Data dari API Maka Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Program Studi yang dipilih) \nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika = Program Studi yang dipilih => 'Menjadi Open Day_Teknik Informatika'"
+                                          "  \n(Tidak Boleh Kosong)",
+                                      child: TextField(
+                                        decoration: const InputDecoration(
+                                          hintText: 'Kategori Pesan',
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              EdgeInsets.only(left: 10, right: 10),
+                                        ),
+                                        maxLines: 1,
+                                        controller: kategoriPesan,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 4,
+                                  height: 12,
                                 ),
-                                Text(
-                                  selectedValue == 'All'
-                                      ? 'All (Diterima & Belum Registrasi Ulang)'
-                                      : selectedValue == 'Belum'
-                                          ? 'Belum Registrasi Ulang'
-                                          : selectedValue == 'Diterima'
-                                              ? 'Diterima (Sudah Registrasi Ulang)'
-                                              : 'Status Registrasi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Visibility(
-                                  visible: !isLoading,
-                                  replacement: const CircularProgressIndicator(),
-                                  child: Card(
-                                    color: const Color.fromRGBO(0, 167, 131, 1),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(150),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(25)),
+                                        elevation: 3,
+                                        color: Colors.white,
+                                        child: TextFormField(
+                                          onChanged: (value) {
+                                            setState(() {
+                                              displayMessage = value;
+                                            });
+                                          },
+                                          minLines: 1,
+                                          maxLines: 5,
+                                          keyboardType: TextInputType.multiline,
+                                          textInputAction: TextInputAction.newline,
+                                          controller: messageController,
+                                          decoration: InputDecoration(
+                                              hintText: "Pesan",
+                                              prefixIcon: Visibility(
+                                                visible: (selectedKodeProgdi == '000'),
+                                                child: IconButton(
+                                                    tooltip: 'Pilih File Excel',
+                                                    onPressed: () async {
+                                                      await daftarNomor();
+                                                    },
+                                                    icon: const Icon(Icons.contact_page,
+                                                        color: Colors.grey)),
+                                              ),
+                                              suffixIcon: IconButton(
+                                                tooltip: 'Pilih File Yang Akan Dikirim',
+                                                icon: const Icon(Icons.attachment),
+                                                onPressed: () async {
+                                                  await pickFiles();
+                                                },
+                                              ),
+                                              contentPadding: const EdgeInsets.only(
+                                                  top: 15, left: 10, right: 10),
+                                              enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white),borderRadius: BorderRadius.all(Radius.circular(25)))
+                                              //labelText: 'Pesan'
+                                              ),
+                                        ),
+                                      ),
                                     ),
-                                    elevation: 3,
-                                    child: Center(
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(150),
+                                      ),
+                                      color: Config().green,
+                                      elevation: 3,
                                       child: IconButton(
-                                        tooltip:
-                                            'Untuk Mengecek Total Nomor Handphone Pastikan Memilih Program Studi,Tahun Ajaran,dan Status Registrasi Ulang (Hanya Untuk Cek Total Nomor dari API)',
-                                        onPressed: () async {
-                                          if (selectedKodeProgdi.isNotEmpty) {
-                                            await checkTotalMahasiswa();
-                                            if (restotalNomor.isNotEmpty &&
-                                                !isLoading) {
-                                              NOTIF_SCREEN().popUpSuccess(
-                                                  context,
-                                                  MediaQuery.of(context).size.width,
-                                                  "Total Nomor Yang Ditemukan : $restotalNomor");
+                                          tooltip:
+                                              'Tambah Template Pesan (Kategori Pesan & Pesan Tidak Boleh Kosong)',
+                                          onPressed: () async {
+                                            if (kategoriPesan.text.isNotEmpty &&
+                                                messageController.text.isNotEmpty) {
+                                              if (await tambahTemplatePesan(
+                                                  kategoriPesan.text,
+                                                  messageController.text)) {
+                                                NOTIF_SCREEN().popUpSuccess(
+                                                    context,
+                                                    MediaQuery.of(context).size.width,
+                                                    "Template Pesan Berhasil Disimpan");
+                                              } else {
+                                                NOTIF_SCREEN().popUpError(
+                                                    context,
+                                                    MediaQuery.of(context).size.width,
+                                                    "Template Pesan Gagal Disimpan");
+                                              }
                                             } else {
                                               NOTIF_SCREEN().popUpError(
                                                   context,
                                                   MediaQuery.of(context).size.width,
-                                                  "Gagal Mengambil Data Dari Server");
+                                                  "Kategori Pesan dan Pesan Tidak Boleh Kosong");
                                             }
-                                          } else {
-                                            NOTIF_SCREEN().popUpError(
-                                                context,
-                                                MediaQuery.of(context).size.width,
-                                                "Silahkan Pilih Progdi");
-                                          }
+                                          },
+                                          icon: const Icon(Icons.add_comment,
+                                              color: Colors.white)),
+                                    ),
+                                    //const SizedBox(width: 8,),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(150),
+                                      ),
+                                      color: Config().green,
+                                      elevation: 3,
+                                      child: IconButton(
+                                        tooltip: 'Lihat Daftar Template Pesan',
+                                        icon:
+                                            const Icon(Icons.list, color: Colors.white),
+                                        onPressed: () async {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return DataTableTemplatePesan(
+                                                  kategoriPesanController:
+                                                      kategoriPesan,
+                                                  isiPesanController: messageController,
+                                                  templatepick: templatePicked);
+                                            },
+                                          );
                                         },
-                                        icon: const Icon(
-                                          Icons.numbers,
-                                          color: Colors.white,
+                                      ),
+                                    ),
+                                    Card(
+                                      color: Config().green,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(150),
+                                      ),
+                                      elevation: 3,
+                                      child: Visibility(
+                                        visible: !loadbtnsend,
+                                        replacement: const CircularProgressIndicator(),
+                                        child: IconButton(
+                                          tooltip: 'Kirim Pesan',
+                                          icon: const Icon(Icons.send,
+                                              color: Colors.white),
+                                          onPressed: () async {
+                                            if (messageController.text.isNotEmpty &&
+                                                kategoriPesan.text.isNotEmpty &&
+                                                ((selectedKodeProgdi != '000' &&
+                                                        selectedKodeProgdi
+                                                            .isNotEmpty) ||
+                                                    listNohp.isNotEmpty)) {
+                                              await sendPostRequest();
+                                            } else {
+                                              NOTIF_SCREEN().popUpError(
+                                                  context,
+                                                  MediaQuery.of(context).size.width,
+                                                  "Pesan,Kategori Pesan & Progdi Tidak Boleh Kosong");
+                                            }
+                                            setState(() {
+                                              messageController.text = '';
+                                              selectedYear = '2023-2024';
+                                              selectedValue = 'All';
+                                              selectedKodeProgdi = '';
+                                              kategoriPesan.text = '';
+                                              files = [];
+                                              listNohp = [];
+                                            });
+                                          },
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text("Cek Total Nomor HP Di API",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25)),
-                              elevation: 3,
-                              color: Colors.white,
-                              child: IntrinsicWidth(
-                                child: Tooltip(
-                                  message:
-                                      "Untuk Memudahkan Pencarian History Pesan Yang Dikirim.\nJika Mengirim Pesan Dengan File Excel Maka Kategori Pesan Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Nama File Excel)"
-                                      "\nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika.xlxs = File Excel => 'Menjadi Open Day_Teknik Informatika.xlxs'"
-                                      "\nJika Mengirim Pesan Menggunakan Data dari API Maka Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Program Studi yang dipilih) \nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika = Program Studi yang dipilih => 'Menjadi Open Day_Teknik Informatika'"
-                                      "  \n(Tidak Boleh Kosong)",
-                                  child: TextField(
-                                    decoration: const InputDecoration(
-                                      hintText: 'Kategori Pesan',
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                    ),
-                                    maxLines: 1,
-                                    controller: kategoriPesan,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25)),
-                                    elevation: 3,
-                                    color: Colors.white,
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        setState(() {
-                                          displayMessage = value;
-                                        });
-                                      },
-                                      minLines: 1,
-                                      maxLines: 5,
-                                      keyboardType: TextInputType.multiline,
-                                      textInputAction: TextInputAction.newline,
-                                      controller: messageController,
-                                      decoration: InputDecoration(
-                                          hintText: "Pesan",
-                                          prefixIcon: Visibility(
-                                            visible: (selectedKodeProgdi == '000'),
-                                            child: IconButton(
-                                                tooltip: 'Pilih File Excel',
-                                                onPressed: () async {
-                                                  await daftarNomor();
-                                                },
-                                                icon: const Icon(Icons.contact_page,
-                                                    color: Colors.grey)),
-                                          ),
-                                          suffixIcon: IconButton(
-                                            tooltip: 'Pilih File Yang Akan Dikirim',
-                                            icon: const Icon(Icons.attachment),
-                                            onPressed: () async {
-                                              await pickFiles();
-                                            },
-                                          ),
-                                          contentPadding: const EdgeInsets.only(
-                                              top: 15, left: 10, right: 10),
-                                          border: InputBorder.none
-                                          //labelText: 'Pesan'
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                                Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(150),
-                                  ),
-                                  color: Config().green,
-                                  elevation: 3,
-                                  child: IconButton(
-                                      tooltip:
-                                          'Tambah Template Pesan (Kategori Pesan & Pesan Tidak Boleh Kosong)',
-                                      onPressed: () async {
-                                        if (kategoriPesan.text.isNotEmpty &&
-                                            messageController.text.isNotEmpty) {
-                                          if (await tambahTemplatePesan(
-                                              kategoriPesan.text,
-                                              messageController.text)) {
-                                            NOTIF_SCREEN().popUpSuccess(
-                                                context,
-                                                MediaQuery.of(context).size.width,
-                                                "Template Pesan Berhasil Disimpan");
-                                          } else {
-                                            NOTIF_SCREEN().popUpError(
-                                                context,
-                                                MediaQuery.of(context).size.width,
-                                                "Template Pesan Gagal Disimpan");
-                                          }
-                                        } else {
-                                          NOTIF_SCREEN().popUpError(
-                                              context,
-                                              MediaQuery.of(context).size.width,
-                                              "Kategori Pesan dan Pesan Tidak Boleh Kosong");
-                                        }
-                                      },
-                                      icon: const Icon(Icons.add_comment,
-                                          color: Colors.white)),
-                                ),
-                                //const SizedBox(width: 8,),
-                                Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(150),
-                                  ),
-                                  color: Config().green,
-                                  elevation: 3,
-                                  child: IconButton(
-                                    tooltip: 'Lihat Daftar Template Pesan',
-                                    icon:
-                                        const Icon(Icons.list, color: Colors.white),
-                                    onPressed: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return DataTableTemplatePesan(
-                                              kategoriPesanController:
-                                                  kategoriPesan,
-                                              isiPesanController: messageController,
-                                              templatepick: templatePicked);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Card(
-                                  color: Config().green,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(150),
-                                  ),
-                                  elevation: 3,
-                                  child: Visibility(
-                                    visible: !loadbtnsend,
-                                    replacement: const CircularProgressIndicator(),
-                                    child: IconButton(
-                                      tooltip: 'Kirim Pesan',
-                                      icon: const Icon(Icons.send,
-                                          color: Colors.white),
-                                      onPressed: () async {
-                                        if (messageController.text.isNotEmpty &&
-                                            kategoriPesan.text.isNotEmpty &&
-                                            ((selectedKodeProgdi != '000' &&
-                                                    selectedKodeProgdi
-                                                        .isNotEmpty) ||
-                                                listNohp.isNotEmpty)) {
-                                          await sendPostRequest();
-                                        } else {
-                                          NOTIF_SCREEN().popUpError(
-                                              context,
-                                              MediaQuery.of(context).size.width,
-                                              "Pesan,Kategori Pesan & Progdi Tidak Boleh Kosong");
-                                        }
-                                        setState(() {
-                                          messageController.text = '';
-                                          selectedYear = '2023-2024';
-                                          selectedValue = 'All';
-                                          selectedKodeProgdi = '';
-                                          kategoriPesan.text = '';
-                                          files = [];
-                                          listNohp = [];
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        ]),
+                      ),]
                     ),
-                  ]),
+                  ),
                 ),
                 Visibility(
                   visible: activeJobs.isNotEmpty && width > 641,
@@ -1015,7 +1028,38 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Daftar Program Studi'),
+          titlePadding: EdgeInsets.zero,
+            title: Align(
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Config().green,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Daftar Program Studi',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           content: SizedBox(
             height: 50,
             width: MediaQuery.of(context).size.width / 2,
