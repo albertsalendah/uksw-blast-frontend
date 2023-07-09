@@ -35,7 +35,8 @@ class _HomeState extends State<Home> {
   List<PlatformFile> files = [];
   String selectedValue = 'All';
   String selectedYear = '2023-2024';
-  List<Job> jobs = []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
+  List<Job> jobs =
+      []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
   late SocketProvider socketProvider;
   List<ProgdiModels> programDataList = [];
   String selectedKodeProgdi = '';
@@ -304,19 +305,16 @@ class _HomeState extends State<Home> {
                 Expanded(
                   child: Align(
                     alignment: Alignment.bottomLeft,
-                    child: CustomScrollView(
-                      slivers: [SliverFillRemaining(
-                        child: Stack(
-                          alignment: Alignment.bottomLeft,
-                          children: [
+                    child: CustomScrollView(slivers: [
+                      SliverFillRemaining(
+                        child:
+                            Stack(alignment: Alignment.bottomLeft, children: [
                           Align(
                             alignment: Alignment.topRight,
                             child: SizedBox(
                               height: MediaQuery.of(context).size.height / 1.6,
                               child: SingleChildScrollView(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  children: [
+                                child: ListView(shrinkWrap: true, children: [
                                   if (messageController.text.isNotEmpty)
                                     MessageCard(
                                       message: displayMessage,
@@ -339,14 +337,16 @@ class _HomeState extends State<Home> {
                                           Card(
                                             color: Config().green,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(150),
+                                              borderRadius:
+                                                  BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
                                             child: Center(
                                               child: IconButton(
-                                                tooltip: 'Cek Progress Pesan',
+                                                  tooltip: 'Cek Progress Pesan',
                                                   onPressed: () {
-                                                    showListJobs(context, activeJobs);
+                                                    showListJobs(
+                                                        context, activeJobs);
                                                   },
                                                   icon: const Icon(
                                                     Icons.message_outlined,
@@ -361,7 +361,10 @@ class _HomeState extends State<Home> {
                                             "Cek Progress",
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
-                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                            style: TextStyle(
+                                                backgroundColor: (width > 600)
+                                                    ? Colors.transparent
+                                                    : Colors.white),
                                           ),
                                         ]),
                                       ),
@@ -375,7 +378,8 @@ class _HomeState extends State<Home> {
                                           Card(
                                             color: Config().green,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(150),
+                                              borderRadius:
+                                                  BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
                                             child: const Center(
@@ -394,7 +398,10 @@ class _HomeState extends State<Home> {
                                             listNohp[0].name,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
-                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                            style: TextStyle(
+                                                backgroundColor: (width > 600)
+                                                    ? Colors.transparent
+                                                    : Colors.white),
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.delete,
@@ -414,9 +421,11 @@ class _HomeState extends State<Home> {
                                       Expanded(
                                         child: Row(children: [
                                           Card(
-                                            color: const Color.fromRGBO(0, 167, 131, 1),
+                                            color: const Color.fromRGBO(
+                                                0, 167, 131, 1),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(150),
+                                              borderRadius:
+                                                  BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
                                             child: const Center(
@@ -435,7 +444,10 @@ class _HomeState extends State<Home> {
                                             files[0].name,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
-                                            style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                            style: TextStyle(
+                                                backgroundColor: (width > 600)
+                                                    ? Colors.transparent
+                                                    : Colors.white),
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.delete,
@@ -455,9 +467,11 @@ class _HomeState extends State<Home> {
                                       message:
                                           'Pilih --- Jika Ingin Mengirim Lewat FIle Excel(Tidak Boleh Kosong)',
                                       child: Card(
-                                          color: const Color.fromRGBO(0, 167, 131, 1),
+                                          color: const Color.fromRGBO(
+                                              0, 167, 131, 1),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(150),
+                                            borderRadius:
+                                                BorderRadius.circular(150),
                                           ),
                                           elevation: 3,
                                           child: Center(
@@ -474,9 +488,15 @@ class _HomeState extends State<Home> {
                                     const SizedBox(
                                       width: 8,
                                     ),
-                                    Text(selectedKodeProgdi.isNotEmpty
-                                        ? '$selectedNamaProgdi ($selectedKodeProgdi)'
-                                        : 'Daftar Program Studi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                    Text(
+                                      selectedKodeProgdi.isNotEmpty
+                                          ? '$selectedNamaProgdi ($selectedKodeProgdi)'
+                                          : 'Daftar Program Studi',
+                                      style: TextStyle(
+                                          backgroundColor: (width > 600)
+                                              ? Colors.transparent
+                                              : Colors.white),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(
@@ -485,9 +505,11 @@ class _HomeState extends State<Home> {
                                 Row(
                                   children: [
                                     Card(
-                                      color: const Color.fromRGBO(0, 167, 131, 1),
+                                      color:
+                                          const Color.fromRGBO(0, 167, 131, 1),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(150),
+                                        borderRadius:
+                                            BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
                                       child: Center(
@@ -500,12 +522,15 @@ class _HomeState extends State<Home> {
                                             color: Colors.white,
                                           ),
                                           itemBuilder: (BuildContext context) {
-                                            return List<PopupMenuEntry<String>>.generate(
+                                            return List<
+                                                PopupMenuEntry<
+                                                    String>>.generate(
                                               86, // Number of years from 2015 to 2100
                                               (index) {
                                                 final startYear = 2012 + index;
                                                 final endYear = 2013 + index;
-                                                final yearRange = '$startYear-$endYear';
+                                                final yearRange =
+                                                    '$startYear-$endYear';
                                                 return PopupMenuItem<String>(
                                                   value: yearRange,
                                                   child: Text(yearRange),
@@ -522,8 +547,20 @@ class _HomeState extends State<Home> {
                                         ),
                                       ),
                                     ),
-                                    Text("Tahun Ajaran ",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),),
-                                    Text(selectedYear,style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                    Text(
+                                      "Tahun Ajaran ",
+                                      style: TextStyle(
+                                          backgroundColor: (width > 600)
+                                              ? Colors.transparent
+                                              : Colors.white),
+                                    ),
+                                    Text(
+                                      selectedYear,
+                                      style: TextStyle(
+                                          backgroundColor: (width > 600)
+                                              ? Colors.transparent
+                                              : Colors.white),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(
@@ -532,9 +569,11 @@ class _HomeState extends State<Home> {
                                 Row(
                                   children: [
                                     Card(
-                                      color: const Color.fromRGBO(0, 167, 131, 1),
+                                      color:
+                                          const Color.fromRGBO(0, 167, 131, 1),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(150),
+                                        borderRadius:
+                                            BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
                                       child: Center(
@@ -556,7 +595,8 @@ class _HomeState extends State<Home> {
                                               <PopupMenuEntry<String>>[
                                             const PopupMenuItem<String>(
                                               value: 'Belum',
-                                              child: Text('Belum Registrasi Ulang'),
+                                              child: Text(
+                                                  'Belum Registrasi Ulang'),
                                             ),
                                             const PopupMenuItem<String>(
                                               value: 'Diterima',
@@ -582,7 +622,11 @@ class _HomeState extends State<Home> {
                                               ? 'Belum Registrasi Ulang'
                                               : selectedValue == 'Diterima'
                                                   ? 'Diterima (Sudah Registrasi Ulang)'
-                                                  : 'Status Registrasi',style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),
+                                                  : 'Status Registrasi',
+                                      style: TextStyle(
+                                          backgroundColor: (width > 600)
+                                              ? Colors.transparent
+                                              : Colors.white),
                                     )
                                   ],
                                 ),
@@ -593,11 +637,14 @@ class _HomeState extends State<Home> {
                                   children: [
                                     Visibility(
                                       visible: !isLoading,
-                                      replacement: const CircularProgressIndicator(),
+                                      replacement:
+                                          const CircularProgressIndicator(),
                                       child: Card(
-                                        color: const Color.fromRGBO(0, 167, 131, 1),
+                                        color: const Color.fromRGBO(
+                                            0, 167, 131, 1),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(150),
+                                          borderRadius:
+                                              BorderRadius.circular(150),
                                         ),
                                         elevation: 3,
                                         child: Center(
@@ -605,24 +652,31 @@ class _HomeState extends State<Home> {
                                             tooltip:
                                                 'Untuk Mengecek Total Nomor Handphone Pastikan Memilih Program Studi,Tahun Ajaran,dan Status Registrasi Ulang (Hanya Untuk Cek Total Nomor dari API)',
                                             onPressed: () async {
-                                              if (selectedKodeProgdi.isNotEmpty) {
+                                              if (selectedKodeProgdi
+                                                  .isNotEmpty) {
                                                 await checkTotalMahasiswa();
                                                 if (restotalNomor.isNotEmpty &&
                                                     !isLoading) {
                                                   NOTIF_SCREEN().popUpSuccess(
                                                       context,
-                                                      MediaQuery.of(context).size.width,
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .width,
                                                       "Total Nomor Yang Ditemukan : $restotalNomor");
                                                 } else {
                                                   NOTIF_SCREEN().popUpError(
                                                       context,
-                                                      MediaQuery.of(context).size.width,
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .width,
                                                       "Gagal Mengambil Data Dari Server");
                                                 }
                                               } else {
                                                 NOTIF_SCREEN().popUpError(
                                                     context,
-                                                    MediaQuery.of(context).size.width,
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width,
                                                     "Silahkan Pilih Progdi");
                                               }
                                             },
@@ -637,7 +691,13 @@ class _HomeState extends State<Home> {
                                     const SizedBox(
                                       width: 8,
                                     ),
-                                    Text("Cek Total Nomor HP Di API",style: TextStyle(backgroundColor: (width > 600)?Colors.transparent:Colors.white),)
+                                    Text(
+                                      "Cek Total Nomor HP Di API",
+                                      style: TextStyle(
+                                          backgroundColor: (width > 600)
+                                              ? Colors.transparent
+                                              : Colors.white),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(
@@ -659,8 +719,8 @@ class _HomeState extends State<Home> {
                                         decoration: const InputDecoration(
                                           hintText: 'Kategori Pesan',
                                           border: InputBorder.none,
-                                          contentPadding:
-                                              EdgeInsets.only(left: 10, right: 10),
+                                          contentPadding: EdgeInsets.only(
+                                              left: 10, right: 10),
                                         ),
                                         maxLines: 1,
                                         controller: kategoriPesan,
@@ -676,7 +736,8 @@ class _HomeState extends State<Home> {
                                     Expanded(
                                       child: Card(
                                         shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(25)),
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
                                         elevation: 3,
                                         color: Colors.white,
                                         child: TextFormField(
@@ -688,30 +749,45 @@ class _HomeState extends State<Home> {
                                           minLines: 1,
                                           maxLines: 5,
                                           keyboardType: TextInputType.multiline,
-                                          textInputAction: TextInputAction.newline,
+                                          textInputAction:
+                                              TextInputAction.newline,
                                           controller: messageController,
                                           decoration: InputDecoration(
                                               hintText: "Pesan",
                                               prefixIcon: Visibility(
-                                                visible: (selectedKodeProgdi == '000'),
+                                                visible: (selectedKodeProgdi ==
+                                                    '000'),
                                                 child: IconButton(
                                                     tooltip: 'Pilih File Excel',
                                                     onPressed: () async {
                                                       await daftarNomor();
                                                     },
-                                                    icon: const Icon(Icons.contact_page,
+                                                    icon: const Icon(
+                                                        Icons.contact_page,
                                                         color: Colors.grey)),
                                               ),
                                               suffixIcon: IconButton(
-                                                tooltip: 'Pilih File Yang Akan Dikirim',
-                                                icon: const Icon(Icons.attachment),
+                                                tooltip:
+                                                    'Pilih File Yang Akan Dikirim',
+                                                icon: const Icon(
+                                                    Icons.attachment),
                                                 onPressed: () async {
                                                   await pickFiles();
                                                 },
                                               ),
-                                              contentPadding: const EdgeInsets.only(
-                                                  top: 15, left: 10, right: 10),
-                                              enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white),borderRadius: BorderRadius.all(Radius.circular(25)))
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                      top: 15,
+                                                      left: 10,
+                                                      right: 10),
+                                              enabledBorder:
+                                                  const OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.white),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  25)))
                                               //labelText: 'Pesan'
                                               ),
                                         ),
@@ -719,7 +795,8 @@ class _HomeState extends State<Home> {
                                     ),
                                     Card(
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(150),
+                                        borderRadius:
+                                            BorderRadius.circular(150),
                                       ),
                                       color: Config().green,
                                       elevation: 3,
@@ -728,24 +805,31 @@ class _HomeState extends State<Home> {
                                               'Tambah Template Pesan (Kategori Pesan & Pesan Tidak Boleh Kosong)',
                                           onPressed: () async {
                                             if (kategoriPesan.text.isNotEmpty &&
-                                                messageController.text.isNotEmpty) {
+                                                messageController
+                                                    .text.isNotEmpty) {
                                               if (await tambahTemplatePesan(
                                                   kategoriPesan.text,
                                                   messageController.text)) {
                                                 NOTIF_SCREEN().popUpSuccess(
                                                     context,
-                                                    MediaQuery.of(context).size.width,
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width,
                                                     "Template Pesan Berhasil Disimpan");
                                               } else {
                                                 NOTIF_SCREEN().popUpError(
                                                     context,
-                                                    MediaQuery.of(context).size.width,
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width,
                                                     "Template Pesan Gagal Disimpan");
                                               }
                                             } else {
                                               NOTIF_SCREEN().popUpError(
                                                   context,
-                                                  MediaQuery.of(context).size.width,
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width,
                                                   "Kategori Pesan dan Pesan Tidak Boleh Kosong");
                                             }
                                           },
@@ -755,14 +839,15 @@ class _HomeState extends State<Home> {
                                     //const SizedBox(width: 8,),
                                     Card(
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(150),
+                                        borderRadius:
+                                            BorderRadius.circular(150),
                                       ),
                                       color: Config().green,
                                       elevation: 3,
                                       child: IconButton(
                                         tooltip: 'Lihat Daftar Template Pesan',
-                                        icon:
-                                            const Icon(Icons.list, color: Colors.white),
+                                        icon: const Icon(Icons.list,
+                                            color: Colors.white),
                                         onPressed: () async {
                                           showDialog(
                                             context: context,
@@ -770,7 +855,8 @@ class _HomeState extends State<Home> {
                                               return DataTableTemplatePesan(
                                                   kategoriPesanController:
                                                       kategoriPesan,
-                                                  isiPesanController: messageController,
+                                                  isiPesanController:
+                                                      messageController,
                                                   templatepick: templatePicked);
                                             },
                                           );
@@ -780,18 +866,21 @@ class _HomeState extends State<Home> {
                                     Card(
                                       color: Config().green,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(150),
+                                        borderRadius:
+                                            BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
                                       child: Visibility(
                                         visible: !loadbtnsend,
-                                        replacement: const CircularProgressIndicator(),
+                                        replacement:
+                                            const CircularProgressIndicator(),
                                         child: IconButton(
                                           tooltip: 'Kirim Pesan',
                                           icon: const Icon(Icons.send,
                                               color: Colors.white),
                                           onPressed: () async {
-                                            if (messageController.text.isNotEmpty &&
+                                            if (messageController
+                                                    .text.isNotEmpty &&
                                                 kategoriPesan.text.isNotEmpty &&
                                                 ((selectedKodeProgdi != '000' &&
                                                         selectedKodeProgdi
@@ -801,7 +890,9 @@ class _HomeState extends State<Home> {
                                             } else {
                                               NOTIF_SCREEN().popUpError(
                                                   context,
-                                                  MediaQuery.of(context).size.width,
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width,
                                                   "Pesan,Kategori Pesan & Progdi Tidak Boleh Kosong");
                                             }
                                             setState(() {
@@ -823,8 +914,8 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                         ]),
-                      ),]
-                    ),
+                      ),
+                    ]),
                   ),
                 ),
                 Visibility(
@@ -914,111 +1005,120 @@ class _HomeState extends State<Home> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          titlePadding: EdgeInsets.zero,
-            title: Align(
-            alignment: Alignment.center,
-            child: FractionallySizedBox(
-              widthFactor: 1.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Config().green,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    topRight: Radius.circular(4),
-                  ),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 1.0,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Daftar Progress',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Future.delayed(const Duration(seconds: 3), () {
+              Navigator.of(context).pop();
+            });
+            return AlertDialog(
+              titlePadding: EdgeInsets.zero,
+              title: Align(
+                alignment: Alignment.center,
+                child: FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Config().green,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                      ),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'Daftar Progress',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-          content: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width / 2,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: activeJobs.length,
-                    itemBuilder: (context, index) {
-                      final job = activeJobs[index];
-                      return Column(
-                        children: [
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          Card(
-                            elevation: 3,
-                            child: ListTile(
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      'Mengirim Pesan Ke Progdi : ${job.sendto}'),
-                                ],
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width / 2,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: activeJobs.length,
+                        itemBuilder: (context, index) {
+                          final job = activeJobs[index];
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 8,
                               ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Status: ${job.status}'),
-                                  Text(job.message),
-                                  Text('Progress: ${job.progress}%'),
-                                  const SizedBox(
-                                    height: 4,
+                              Card(
+                                elevation: 3,
+                                child: ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          'Mengirim Pesan Ke Progdi : ${job.sendto}'),
+                                    ],
                                   ),
-                                  LinearProgressIndicator(
-                                    value: job.progress / 100,
-                                    backgroundColor: Colors.white,
-                                    color: Config().green,
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Status: ${job.status}'),
+                                      Text(job.message),
+                                      Text('Progress: ${job.progress}%'),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      LinearProgressIndicator(
+                                        value: job.progress / 100,
+                                        backgroundColor: Colors.white,
+                                        color: Config().green,
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Divider(
-                            color: Colors.grey,
-                            height: 1,
-                          )
-                        ],
-                      );
-                    },
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              const Divider(
+                                color: Colors.grey,
+                                height: 1,
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.grey,
                   ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
               ],
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.close,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -1030,7 +1130,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return AlertDialog(
           titlePadding: EdgeInsets.zero,
-            title: Align(
+          title: Align(
             alignment: Alignment.center,
             child: FractionallySizedBox(
               widthFactor: 1.0,

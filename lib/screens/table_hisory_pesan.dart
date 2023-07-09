@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 
 class DataTablePesan extends StatefulWidget {
   final List<history_models> listPesan;
-  const DataTablePesan({super.key, required this.listPesan});
+
+  const DataTablePesan({Key? key, required this.listPesan}) : super(key: key);
 
   @override
   _DataTablePesanState createState() => _DataTablePesanState();
@@ -25,7 +26,7 @@ class _DataTablePesanState extends State<DataTablePesan> {
   }
 
   @override
-  void didUpdateWidget(covariant DataTablePesan oldWidget) {
+  void didUpdateWidget(DataTablePesan oldWidget) {
     if (oldWidget.listPesan != widget.listPesan) {
       currentPage = 0;
       paginateList();
@@ -58,7 +59,7 @@ class _DataTablePesanState extends State<DataTablePesan> {
     if (searchController.text.isEmpty) {
       return paginatedList;
     } else {
-      return widget.listPesan.where((item) {
+      return paginatedList.where((item) {
         final nama = item.Nama?.toLowerCase() ?? '';
         final noHandphone = item.No_Handphone?.toLowerCase() ?? '';
         return nama.contains(searchController.text.toLowerCase()) ||

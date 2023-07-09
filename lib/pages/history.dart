@@ -224,8 +224,8 @@ class _HistoryState extends State<History> {
                                                               .id_pesan ??
                                                           '');
                                                   if (width < 800) {
-                                                    showListHistory(
-                                                        context, index);
+                                                    showListHistory(context,
+                                                        listpesan, index);
                                                   }
                                                 },
                                                 child: ListTile(
@@ -339,65 +339,87 @@ class _HistoryState extends State<History> {
     }
   }
 
-  showListHistory(BuildContext context, int index) {
-    handleHistorySelection(filteredList[index].id_pesan ?? '');
+  showListHistory(BuildContext context, List<history_models> listp, int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          titlePadding: EdgeInsets.zero,
-          title: Align(
-            alignment: Alignment.center,
-            child: FractionallySizedBox(
-              widthFactor: 1.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Config().green,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    topRight: Radius.circular(4),
-                  ),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 1.0,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Daftar Histori Pesan',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            // Call handleHistorySelection and fetch data before building the dialog
+            handleHistorySelection(filteredList[index].id_pesan ?? '');
+
+            return FutureBuilder(
+              future: getlistpesan(filteredList[index].id_pesan ??
+                  ''), // Replace 'fetchData' with your actual data fetching method
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text('Error fetching data'));
+                } else {
+                  return AlertDialog(
+                    titlePadding: EdgeInsets.zero,
+                    title: Align(
+                      alignment: Alignment.center,
+                      child: FractionallySizedBox(
+                        widthFactor: 1.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Config().green,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Daftar Histori Pesan',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          content: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: DataTablePesan(listPesan: listpesan)),
-              ],
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.close,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
+                    content: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: DataTablePesan(listPesan: listpesan)),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.refresh,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  handleHistorySelection(
+                                      filteredList[index].id_pesan ?? '');
+                                });
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
               },
-            ),
-          ],
+            );
+          },
         );
       },
     );

@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, library_prefixes
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../models/userprofile.dart';
 import '../utils/SessionManager.dart';
 import '../utils/link.dart';
 
@@ -18,6 +19,7 @@ class SocketProvider extends ChangeNotifier {
   Function(List<Job>)? listJob;
   Function(String)? QR;
   Function(String)? messages;
+  UserProfile user = UserProfile();
 
   final String link = Links().link;
 
@@ -33,7 +35,7 @@ class SocketProvider extends ChangeNotifier {
         }
       });
 
-      socket?.on('logout',(data) async {
+      socket?.on('logout', (data) async {
         await SessionManager.logout();
       });
 
@@ -65,8 +67,20 @@ class SocketProvider extends ChangeNotifier {
             showQR = false;
             updateLoading?.call(loading);
             updateMainMenu?.call(mainmenuV);
-            updateQR?.call(showQR);           
+            updateQR?.call(showQR);
           }
+        }
+      });
+
+      socket?.on('profile', (data) {
+        if (data != null) {
+          final String? userid = data['userid'];
+          final String? username = data['username'];
+          final String? profilepicture = data['profilepicture'];
+          user = UserProfile(
+              userid: userid,
+              username: username,
+              profilepicture: profilepicture);
         }
       });
 
