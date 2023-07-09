@@ -55,7 +55,7 @@ class _HistoryState extends State<History> {
     } else {
       //print(response.reasonPhrase);
       // ignore: use_build_context_synchronously
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Mengambil Data Dari Database");
     }
   }
@@ -72,12 +72,13 @@ class _HistoryState extends State<History> {
       dynamic parsedData = json.decode(responseString);
       searchController.clear();
       // ignore: use_build_context_synchronously
-      NOTIF_SCREEN().popUpSuccess(context,MediaQuery.of(context).size.width / 3,"Berhasil Menghapus Data Dari Server");
+      NOTIF_SCREEN().popUpSuccess(context, MediaQuery.of(context).size.width,
+          "Berhasil Menghapus Data Dari Server");
       fetchData();
     } else {
       //print(response.reasonPhrase);
       // ignore: use_build_context_synchronously
-      NOTIF_SCREEN().popUpSuccess(context,MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpSuccess(context, MediaQuery.of(context).size.width,
           "Gagal Menghapus Data Dari Server");
     }
   }
@@ -97,12 +98,12 @@ class _HistoryState extends State<History> {
       } else {
         //print('Failed to send data. Error: ${historyResponse.statusCode}');
         // ignore: use_build_context_synchronously
-        NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
-          "Gagal Mengambil Data Dari Database");
+        NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
+            "Gagal Mengambil Data Dari Database");
       }
     } catch (e) {
       //print(e);
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Mengambil Data Dari Database");
     }
   }
@@ -155,6 +156,7 @@ class _HistoryState extends State<History> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     if (listHistory.isNotEmpty) {
       return Stack(
         children: [
@@ -168,143 +170,152 @@ class _HistoryState extends State<History> {
             drawer: const SideNavigationBar(),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
+              child: SizedBox(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
                                 color: Colors.white,
-                                width: 1.0,
-                                style: BorderStyle.solid,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
                               ),
-                            ),
-                            child: TextField(
-                              controller: searchController,
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                              decoration: const InputDecoration(
-                                labelText: 'Search',
-                                prefixIcon: Icon(Icons.search),
-                                border: InputBorder.none,
+                              child: TextField(
+                                controller: searchController,
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                decoration: const InputDecoration(
+                                  labelText: 'Search',
+                                  prefixIcon: Icon(Icons.search),
+                                  border: InputBorder.none,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount: filteredList.length,
-                              itemBuilder: (ctx, index) {
-                                if (index >= filteredList.length) {
-                                  return null; // Return null for indices out of range
-                                }
-                                return Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Card(
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: InkWell(
-                                              onTap: () {
-                                                handleHistorySelection(
-                                                    filteredList[index]
-                                                            .id_pesan ??
-                                                        '');
-                                              },
-                                              child: ListTile(
-                                                title: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                          "Kategori Pesan : ${filteredList[index].Kategori_Pesan}"),
-                                                    ),
-                                                  ],
-                                                ),
-                                                subtitle: Text(
-                                                    "Tanggal Kirim : ${filteredList[index].tanggal}"),
-                                              ),
-                                            ),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              IconButton(
-                                                  onPressed: () {
-                                                    downloadFile(
-                                                        filteredList[index]
-                                                                .id_pesan ??
-                                                            '');
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.download,
-                                                    color: Colors.grey,
-                                                  )),
-                                              const SizedBox(
-                                                width: 8,
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(Icons.delete,
-                                                    color: Colors.grey),
-                                                onPressed: () {
-                                                  showDeleteHirtoryAlertDialog(
-                                                      context,
+                          Expanded(
+                            child: ListView.builder(
+                                itemCount: filteredList.length,
+                                itemBuilder: (ctx, index) {
+                                  if (index >= filteredList.length) {
+                                    return null; // Return null for indices out of range
+                                  }
+                                  return Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Card(
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  handleHistorySelection(
                                                       filteredList[index]
                                                               .id_pesan ??
-                                                          '',
-                                                      filteredList[index]
-                                                              .Kategori_Pesan ??
                                                           '');
+                                                  if (width < 800) {
+                                                    showListHistory(
+                                                        context, index);
+                                                  }
                                                 },
+                                                child: ListTile(
+                                                  title: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                            "Kategori Pesan : ${filteredList[index].Kategori_Pesan}"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  subtitle: Text(
+                                                      "Tanggal Kirim : ${filteredList[index].tanggal}"),
+                                                ),
                                               ),
-                                            ],
-                                          ),
-                                        ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                IconButton(
+                                                    onPressed: () {
+                                                      downloadFile(
+                                                          filteredList[index]
+                                                                  .id_pesan ??
+                                                              '');
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.download,
+                                                      color: Colors.grey,
+                                                    )),
+                                                const SizedBox(
+                                                  width: 8,
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.delete,
+                                                      color: Colors.grey),
+                                                  onPressed: () {
+                                                    showDeleteHirtoryAlertDialog(
+                                                        context,
+                                                        filteredList[index]
+                                                                .id_pesan ??
+                                                            '',
+                                                        filteredList[index]
+                                                                .Kategori_Pesan ??
+                                                            '');
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    const Divider(
-                                      color: Colors.grey,
-                                      height: 1,
-                                    )
-                                  ],
-                                );
-                              }),
-                        ),
-                      ],
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      const Divider(
+                                        color: Colors.grey,
+                                        height: 1,
+                                      )
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const VerticalDivider(
-                    width: 20,
-                    thickness: 1,
-                    indent: 20,
-                    endIndent: 0,
-                    color: Colors.grey,
-                  ),
-                  Expanded(
-                    child: Visibility(
-                        visible: listpesan.isNotEmpty,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                                child: DataTablePesan(listPesan: listpesan)),
-                          ],
-                        )),
-                  )
-                ],
+                    Visibility(
+                      visible: listpesan.isNotEmpty && width > 800,
+                      child: const VerticalDivider(
+                        width: 20,
+                        thickness: 1,
+                        indent: 20,
+                        endIndent: 0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Expanded(
+                      child: Visibility(
+                          visible: listpesan.isNotEmpty && width > 800,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                  child: DataTablePesan(listPesan: listpesan)),
+                            ],
+                          )),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -328,9 +339,73 @@ class _HistoryState extends State<History> {
     }
   }
 
+  showListHistory(BuildContext context, int index) {
+    handleHistorySelection(filteredList[index].id_pesan ?? '');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          titlePadding: EdgeInsets.zero,
+          title: Align(
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Config().green,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Daftar Histori Pesan',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: DataTablePesan(listPesan: listpesan)),
+              ],
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   showDeleteHirtoryAlertDialog(
       BuildContext context, String id_pesan, String Kat) {
-        AwesomeDialog(
+    AwesomeDialog(
       width: MediaQuery.of(context).size.width / 3,
       context: context,
       showCloseIcon: true,
@@ -343,9 +418,9 @@ class _HistoryState extends State<History> {
       desc: "Hapus $Kat ?",
       btnOkOnPress: () {
         setState(() {
-                  deletelistpesan(id_pesan);
-                  handleHistorySelection(id_pesan);
-                });
+          deletelistpesan(id_pesan);
+          handleHistorySelection(id_pesan);
+        });
       },
       btnCancelOnPress: () {},
     ).show();

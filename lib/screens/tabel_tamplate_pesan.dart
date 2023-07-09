@@ -7,6 +7,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/template_pesan.dart';
+import '../utils/config.dart';
 import '../utils/link.dart';
 import 'notif_screen.dart';
 
@@ -83,7 +84,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
         paginateList();
       });
     } else {
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Mengambil Data Dari Database");
     }
   }
@@ -97,11 +98,11 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
       // Data deleted successfully
       NOTIF_SCREEN().popUpSuccess(
           context,
-          MediaQuery.of(context).size.width / 3,
+          MediaQuery.of(context).size.width,
           "Berhasil Menghapus Data Dari Database");
       fetchdaftarTemplate();
     } else {
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Menghapus Data Dari Database");
     }
   }
@@ -122,11 +123,11 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     if (response.statusCode == 200) {
       NOTIF_SCREEN().popUpSuccess(
           context,
-          MediaQuery.of(context).size.width / 3,
+          MediaQuery.of(context).size.width,
           "Berhasil Mengubah Data Dari Database");
       fetchdaftarTemplate();
     } else {
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Mengubah Data Dari Database");
     }
   }
@@ -144,6 +145,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
 
   @override
   Widget build(BuildContext context) {
+    double width =MediaQuery.of(context).size.width;
     if (paginatedList.isEmpty) {
       // Show a loading indicator or a message while waiting for data
       return const AlertDialog(
@@ -152,9 +154,40 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
       );
     } else {
       return AlertDialog(
-        title: const Text('Daftar Template Pesan'),
+        titlePadding: EdgeInsets.zero,
+            title: Align(
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Config().green,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Daftar Template Pesan',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         content: SizedBox(
-          width: MediaQuery.of(context).size.width / 1.7,
+          width: (width > 827) ? MediaQuery.of(context).size.width / 1.7 : 500,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -263,50 +296,47 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        final updatedItem =
-                                            daftar_template[index];
-                                        _showUpdateDialog(updatedItem);
-                                      },
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.grey,
-                                      )),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.grey),
+                            Row(
+                              children: [
+                                IconButton(
                                     onPressed: () {
-                                      AwesomeDialog(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                3,
-                                        context: context,
-                                        showCloseIcon: true,
-                                        closeIcon: const Icon(
-                                          Icons.close_rounded,
-                                        ),
-                                        animType: AnimType.scale,
-                                        dialogType: DialogType.question,
-                                        title: 'Delete',
-                                        desc: "Hapus ${item.kategoriPesan} ?",
-                                        btnOkOnPress: () {
-                                          deleteTemplatePesan(
-                                              daftar_template[index].id);
-                                        },
-                                        btnCancelOnPress: () {},
-                                      ).show();
+                                      final updatedItem =
+                                          daftar_template[index];
+                                      _showUpdateDialog(updatedItem,width);
                                     },
-                                  ),
-                                ],
-                              ),
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.grey,
+                                    )),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.grey),
+                                  onPressed: () {
+                                    AwesomeDialog(
+                                      width:
+                                          MediaQuery.of(context).size.width /
+                                              3,
+                                      context: context,
+                                      showCloseIcon: true,
+                                      closeIcon: const Icon(
+                                        Icons.close_rounded,
+                                      ),
+                                      animType: AnimType.scale,
+                                      dialogType: DialogType.question,
+                                      title: 'Delete',
+                                      desc: "Hapus ${item.kategoriPesan} ?",
+                                      btnOkOnPress: () {
+                                        deleteTemplatePesan(
+                                            daftar_template[index].id);
+                                      },
+                                      btnCancelOnPress: () {},
+                                    ).show();
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -342,7 +372,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
     }
   }
 
-  void _showUpdateDialog(Template_Pesan currentItem) {
+  void _showUpdateDialog(Template_Pesan currentItem,double width) {
     editKategoriPesan.text = currentItem.kategoriPesan;
     editIsiPesan.text = currentItem.isiPesan;
     showDialog(
@@ -350,42 +380,74 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            title: const Text('Update Item'),
-            content: Wrap(
-              children: [
-                SizedBox(
-                  width: double.maxFinite,
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: editKategoriPesan,
-                        decoration: const InputDecoration(
-                          labelText: 'Kategori Pesan',
+            titlePadding: EdgeInsets.zero,
+            title: Align(
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Config().green,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Update Item',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+            content: SizedBox(
+              width: (width > 827) ? MediaQuery.of(context).size.width / 1.7 : 500,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextField(
+                      controller: editKategoriPesan,
+                      decoration: const InputDecoration(
+                        labelText: 'Kategori Pesan',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextField(
+                      minLines: 1,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      textInputAction: TextInputAction.newline,
+                      controller: editIsiPesan,
+                      decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide(),
                           ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        minLines: 1,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        textInputAction: TextInputAction.newline,
-                        controller: editIsiPesan,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(),
-                            ),
-                            contentPadding: EdgeInsets.all(10),
-                            labelText: 'Isi Pesan'),
-                      ),
-                    ],
-                  ),
+                          contentPadding: EdgeInsets.all(10),
+                          labelText: 'Isi Pesan'),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             actions: [
               TextButton(

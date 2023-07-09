@@ -35,8 +35,7 @@ class _HomeState extends State<Home> {
   List<PlatformFile> files = [];
   String selectedValue = 'All';
   String selectedYear = '2023-2024';
-  List<Job> jobs =
-      []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
+  List<Job> jobs = []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
   late SocketProvider socketProvider;
   List<ProgdiModels> programDataList = [];
   String selectedKodeProgdi = '';
@@ -282,6 +281,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     setState(() {
       loadProgramData();
     });
@@ -316,6 +316,38 @@ class _HomeState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          children: [
+                            if (width < 641)
+                              Expanded(
+                                child: Row(children: [
+                                  Card(
+                                    color: Config().green,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(150),
+                                    ),
+                                    elevation: 3,
+                                    child: IconButton(
+                                        onPressed: () {
+                                          showListJobs(context, activeJobs);
+                                        },
+                                        icon: const Icon(
+                                          Icons.contact_page,
+                                          color: Colors.white,
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  const Text(
+                                    "Cek Progress",
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ]),
+                              ),
+                          ],
+                        ),
                         Row(
                           children: [
                             if (listNohp.isNotEmpty)
@@ -547,20 +579,18 @@ class _HomeState extends State<Home> {
                                           !isLoading) {
                                         NOTIF_SCREEN().popUpSuccess(
                                             context,
-                                            MediaQuery.of(context).size.width /
-                                                3,
+                                            MediaQuery.of(context).size.width,
                                             "Total Nomor Yang Ditemukan : $restotalNomor");
                                       } else {
                                         NOTIF_SCREEN().popUpError(
                                             context,
-                                            MediaQuery.of(context).size.width /
-                                                3,
+                                            MediaQuery.of(context).size.width,
                                             "Gagal Mengambil Data Dari Server");
                                       }
                                     } else {
                                       NOTIF_SCREEN().popUpError(
                                           context,
-                                          MediaQuery.of(context).size.width / 3,
+                                          MediaQuery.of(context).size.width,
                                           "Silahkan Pilih Progdi");
                                     }
                                   },
@@ -671,20 +701,18 @@ class _HomeState extends State<Home> {
                                           messageController.text)) {
                                         NOTIF_SCREEN().popUpSuccess(
                                             context,
-                                            MediaQuery.of(context).size.width /
-                                                3,
+                                            MediaQuery.of(context).size.width,
                                             "Template Pesan Berhasil Disimpan");
                                       } else {
                                         NOTIF_SCREEN().popUpError(
                                             context,
-                                            MediaQuery.of(context).size.width /
-                                                3,
+                                            MediaQuery.of(context).size.width,
                                             "Template Pesan Gagal Disimpan");
                                       }
                                     } else {
                                       NOTIF_SCREEN().popUpError(
                                           context,
-                                          MediaQuery.of(context).size.width / 3,
+                                          MediaQuery.of(context).size.width,
                                           "Kategori Pesan dan Pesan Tidak Boleh Kosong");
                                     }
                                   },
@@ -740,7 +768,7 @@ class _HomeState extends State<Home> {
                                     } else {
                                       NOTIF_SCREEN().popUpError(
                                           context,
-                                          MediaQuery.of(context).size.width / 3,
+                                          MediaQuery.of(context).size.width,
                                           "Pesan,Kategori Pesan & Progdi Tidak Boleh Kosong");
                                     }
                                     setState(() {
@@ -766,7 +794,7 @@ class _HomeState extends State<Home> {
                   ]),
                 ),
                 Visibility(
-                  visible: activeJobs.isNotEmpty,
+                  visible: activeJobs.isNotEmpty && width > 641,
                   child: const VerticalDivider(
                     width: 20,
                     thickness: 1,
@@ -777,7 +805,7 @@ class _HomeState extends State<Home> {
                 ),
                 //--------------------PROGRESS-----------------------------------------------------------
                 Visibility(
-                  visible: activeJobs.isNotEmpty,
+                  visible: activeJobs.isNotEmpty && width > 641,
                   child: Expanded(
                     child: Column(
                       children: [
@@ -845,6 +873,120 @@ class _HomeState extends State<Home> {
           ),
         ),
       ],
+    );
+  }
+
+  showListJobs(BuildContext context, List<Job> activeJobs) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          titlePadding: EdgeInsets.zero,
+            title: Align(
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Config().green,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Daftar Progress',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width / 2,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: activeJobs.length,
+                    itemBuilder: (context, index) {
+                      final job = activeJobs[index];
+                      return Column(
+                        children: [
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Card(
+                            elevation: 3,
+                            child: ListTile(
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Mengirim Pesan Ke Progdi : ${job.sendto}'),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Status: ${job.status}'),
+                                  Text(job.message),
+                                  Text('Progress: ${job.progress}%'),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  LinearProgressIndicator(
+                                    value: job.progress / 100,
+                                    backgroundColor: Colors.white,
+                                    color: Config().green,
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          const Divider(
+                            color: Colors.grey,
+                            height: 1,
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

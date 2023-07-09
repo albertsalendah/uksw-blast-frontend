@@ -94,7 +94,7 @@ class _DataTablePesanState extends State<DataTablePesan> {
                       decoration: const InputDecoration(
                           labelText: 'Search',
                           prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none
+                          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)))
                           ),
                     ),
                   ),

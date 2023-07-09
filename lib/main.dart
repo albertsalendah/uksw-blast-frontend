@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
         pop = true;
       });
       NOTIF_SCREEN()
-          .popUpError(context, MediaQuery.of(context).size.width / 3, message);
+          .popUpError(context, MediaQuery.of(context).size.width, message);
     }
   }
 
@@ -191,6 +191,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     final isLoggedIn = widget.isLoggedIn;
     if (isLoggedIn) {
       if (loading) {
@@ -276,143 +277,147 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                 fit: BoxFit.cover),
             Scaffold(
                 backgroundColor: Colors.transparent,
-                body: Center(
+                body: Align(
+                  alignment: Alignment.center,
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height / 3.1,
-                    width: MediaQuery.of(context).size.width / 4,
-                    child: Card(
-                        elevation: 3,
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 40,
-                              width: MediaQuery.of(context).size.width / 4,
-                              decoration: BoxDecoration(
-                                color: Config().green,
-                                borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(4),
-                                    topRight: Radius.circular(4)),
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
+                    height: MediaQuery.of(context).size.height / 2,
+                    width: (width > 827) ? MediaQuery.of(context).size.width / 4 : 300,
+                    child: Wrap(
+                      children: [
+                        Card(
+                            elevation: 3,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 40,
+                                  width: (width > 827) ? MediaQuery.of(context).size.width / 4 : 300,
+                                  decoration: BoxDecoration(
+                                    color: Config().green,
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(4),
+                                        topRight: Radius.circular(4)),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                  ),
+                                  child: const Padding(
+                                      padding: EdgeInsets.only(left: 16),
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text("LOGIN",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16)))),
                                 ),
-                              ),
-                              child: const Padding(
-                                  padding: EdgeInsets.only(left: 16),
-                                  child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text("LOGIN",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16)))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextField(
-                                    minLines: 1,
-                                    keyboardType: TextInputType.name,
-                                    maxLines: null,
-                                    textInputAction: TextInputAction.newline,
-                                    controller: usernameController,
-                                    decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                        ),
-                                        contentPadding: EdgeInsets.all(10),
-                                        labelText: 'Username'),
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  TextField(
-                                    keyboardType: TextInputType.visiblePassword,
-                                    maxLines: 1,
-                                    obscureText: !passwordVisible,
-                                    textInputAction: TextInputAction.newline,
-                                    controller: passController,
-                                    decoration: InputDecoration(
-                                        border: const OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                        ),
-                                        contentPadding: const EdgeInsets.all(10),
-                                        labelText: 'Password',
-                                        suffixIcon: IconButton(
-                                          onPressed: () {
-                                            // Update the state i.e. toogle the state of passwordVisible variable
-                                            setState(() {
-                                              passwordVisible =
-                                                  !passwordVisible;
-                                            });
-                                          },
-                                          icon: Icon(
-                                            // Based on passwordVisible state choose the icon
-                                            passwordVisible
-                                                ? Icons.visibility
-                                                : Icons.visibility_off,
-                                            color: Config().green,
-                                          ),
-                                        )),
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Expanded(
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: SizedBox(
-                                            child: Visibility(
-                                              visible: !loginbtn,
-                                              replacement:
-                                                  const CircularProgressIndicator(),
-                                              child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Config().green),
-                                                  onPressed: () async {
-                                                    if (usernameController
-                                                            .text.isNotEmpty &&
-                                                        passController
-                                                            .text.isNotEmpty) {
-                                                      await login();
-                                                    } else {
-                                                      loginbtn = false;
-                                                      NOTIF_SCREEN().popUpError(
-                                                          context,
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width /
-                                                              3,
-                                                          "Username & Password Tidak Boleh Kosong");
-                                                    }
-                                                  },
-                                                  child: const Text("Login")),
+                                      TextField(
+                                        minLines: 1,
+                                        keyboardType: TextInputType.name,
+                                        maxLines: null,
+                                        textInputAction: TextInputAction.newline,
+                                        controller: usernameController,
+                                        decoration: const InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(),
+                                            ),
+                                            contentPadding: EdgeInsets.all(10),
+                                            labelText: 'Username'),
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      TextField(
+                                        keyboardType: TextInputType.visiblePassword,
+                                        maxLines: 1,
+                                        obscureText: !passwordVisible,
+                                        textInputAction: TextInputAction.newline,
+                                        controller: passController,
+                                        decoration: InputDecoration(
+                                            border: const OutlineInputBorder(
+                                              borderSide: BorderSide(),
+                                            ),
+                                            contentPadding: const EdgeInsets.all(10),
+                                            labelText: 'Password',
+                                            suffixIcon: IconButton(
+                                              onPressed: () {
+                                                // Update the state i.e. toogle the state of passwordVisible variable
+                                                setState(() {
+                                                  passwordVisible =
+                                                      !passwordVisible;
+                                                });
+                                              },
+                                              icon: Icon(
+                                                // Based on passwordVisible state choose the icon
+                                                passwordVisible
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off,
+                                                color: Config().green,
+                                              ),
+                                            )),
+                                      ),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: SizedBox(
+                                                child: Visibility(
+                                                  visible: !loginbtn,
+                                                  replacement:
+                                                      const CircularProgressIndicator(),
+                                                  child: ElevatedButton(
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                              backgroundColor:
+                                                                  Config().green),
+                                                      onPressed: () async {
+                                                        if (usernameController
+                                                                .text.isNotEmpty &&
+                                                            passController
+                                                                .text.isNotEmpty) {
+                                                          await login();
+                                                        } else {
+                                                          loginbtn = false;
+                                                          NOTIF_SCREEN().popUpError(
+                                                              context,
+                                                              MediaQuery.of(context)
+                                                                      .size
+                                                                      .width,
+                                                              "Username & Password Tidak Boleh Kosong");
+                                                        }
+                                                      },
+                                                      child: const Text("Login")),
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: TextButton(
-                                            onPressed: () {
-                                              Register();
-                                            },
-                                            child: const Text("Tambah User")),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Register();
+                                                },
+                                                child: const Text("Tambah User")),
+                                          )
+                                        ],
                                       )
                                     ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        )),
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ],
+                    ),
                   ),
                 )),
           ],
@@ -630,7 +635,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                     if(admin.text.isNotEmpty && adminPass.text.isNotEmpty && register_username.text.isNotEmpty && register_userpass.text.isNotEmpty){
                       regiteruser();
                     }else{
-                      NOTIF_SCREEN().popUpError(context,MediaQuery.of(context).size.width /3,"Username & Password Tidak Boleh Kosong");
+                      NOTIF_SCREEN().popUpError(context,MediaQuery.of(context).size.width,"Username & Password Tidak Boleh Kosong");
                     }
                   },
                   child: const Text('Register'),
@@ -667,12 +672,12 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       final message = await jsonDecode(response.body)['message'];
       Navigator.pop(context);
       NOTIF_SCREEN()
-          .popUpSuccess(context, MediaQuery.of(context).size.width / 3, message);
+          .popUpSuccess(context, MediaQuery.of(context).size.width, message);
     } else {
       final message = await jsonDecode(response.body)['message'];
       Navigator.pop(context);
       NOTIF_SCREEN()
-          .popUpError(context, MediaQuery.of(context).size.width / 3, message);
+          .popUpError(context, MediaQuery.of(context).size.width, message);
     }
   }
 }

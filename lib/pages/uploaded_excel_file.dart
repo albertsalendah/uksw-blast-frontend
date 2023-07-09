@@ -59,7 +59,7 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
         files = fileList.cast<String>();
       });
     } else {
-      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width / 3,
+      NOTIF_SCREEN().popUpError(context, MediaQuery.of(context).size.width,
           "Gagal Mengambil Data Dari Database");
     }
   }
@@ -82,12 +82,12 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
       searchController.text = '';
       NOTIF_SCREEN().popUpSuccess(
           context,
-          MediaQuery.of(context).size.width / 3,
+          MediaQuery.of(context).size.width,
           "Berhasil Menghapus File $filename Dari Server");
     } else {
       NOTIF_SCREEN().popUpSuccess(
           context,
-          MediaQuery.of(context).size.width / 3,
+          MediaQuery.of(context).size.width,
           "Gagal Menghapus File $filename Dari Server");
     }
   }
