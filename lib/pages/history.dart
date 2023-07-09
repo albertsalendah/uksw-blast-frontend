@@ -303,17 +303,17 @@ class _HistoryState extends State<History> {
                         color: Colors.grey,
                       ),
                     ),
-                    Expanded(
-                      child: Visibility(
-                          visible: listpesan.isNotEmpty && width > 800,
+                    Visibility(
+                        visible: listpesan.isNotEmpty && width > 800,
+                        child: Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                   child: DataTablePesan(listPesan: listpesan)),
                             ],
-                          )),
-                    )
+                          ),
+                        ))
                   ],
                 ),
               ),

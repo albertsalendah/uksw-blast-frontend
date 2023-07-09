@@ -35,13 +35,7 @@ class _HomeState extends State<Home> {
   List<PlatformFile> files = [];
   String selectedValue = 'All';
   String selectedYear = '2023-2024';
-  List<Job> jobs = [Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd'),
-  Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')]; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
+  List<Job> jobs = []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
   late SocketProvider socketProvider;
   List<ProgdiModels> programDataList = [];
   String selectedKodeProgdi = '';
