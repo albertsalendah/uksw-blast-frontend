@@ -316,9 +316,7 @@ class _DataTableTemplatePesan extends State<DataTableTemplatePesan> {
                                       color: Colors.grey),
                                   onPressed: () {
                                     AwesomeDialog(
-                                      width:
-                                          MediaQuery.of(context).size.width /
-                                              3,
+                                      width:(width > 830) ? width / 2 : 350,
                                       context: context,
                                       showCloseIcon: true,
                                       closeIcon: const Icon(

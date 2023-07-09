@@ -405,8 +405,9 @@ class _HistoryState extends State<History> {
 
   showDeleteHirtoryAlertDialog(
       BuildContext context, String id_pesan, String Kat) {
+    double w = MediaQuery.of(context).size.width;
     AwesomeDialog(
-      width: MediaQuery.of(context).size.width / 3,
+      width: (w > 830) ? w / 2 : 350,
       context: context,
       showCloseIcon: true,
       closeIcon: const Icon(

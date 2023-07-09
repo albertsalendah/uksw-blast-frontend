@@ -214,8 +214,9 @@ class _UplodaedExcelFileListState extends State<UplodaedExcelFileList> {
   }
 
   showDeleteAlertDialog(BuildContext context, String filename) {
+    double w = MediaQuery.of(context).size.width;
     AwesomeDialog(
-      width: MediaQuery.of(context).size.width / 3,
+      width: (w > 830) ? w / 2 : 350,
       context: context,
       showCloseIcon: true,
       closeIcon: const Icon(

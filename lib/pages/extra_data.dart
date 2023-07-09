@@ -204,8 +204,9 @@ class _ExtraDataState extends State<ExtraData> {
   }
 
   showDeleteSisaDataAlertDialog(BuildContext context, String filename) {
+    double w = MediaQuery.of(context).size.width;
     AwesomeDialog(
-      width: MediaQuery.of(context).size.width / 3,
+      width: (w > 830) ? w / 2 : 350,
       context: context,
       showCloseIcon: true,
       closeIcon: const Icon(
