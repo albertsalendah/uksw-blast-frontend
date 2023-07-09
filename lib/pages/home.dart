@@ -293,6 +293,7 @@ class _HomeState extends State<Home> {
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover),
         Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.transparent,
           appBar: AppBar(title: const Text('Home')),
           drawer: const SideNavigationBar(),

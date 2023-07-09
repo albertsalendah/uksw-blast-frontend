@@ -276,12 +276,15 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.cover),
             Scaffold(
+                resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
                 body: Align(
                   alignment: Alignment.center,
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height / 2,
-                    width: (width > 827) ? MediaQuery.of(context).size.width / 4 : 300,
+                    width: (width > 827)
+                        ? MediaQuery.of(context).size.width / 4
+                        : 300,
                     child: Wrap(
                       children: [
                         Card(
@@ -290,7 +293,9 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                               children: [
                                 Container(
                                   height: 40,
-                                  width: (width > 827) ? MediaQuery.of(context).size.width / 4 : 300,
+                                  width: (width > 827)
+                                      ? MediaQuery.of(context).size.width / 4
+                                      : 300,
                                   decoration: BoxDecoration(
                                     color: Config().green,
                                     borderRadius: const BorderRadius.only(
@@ -320,7 +325,8 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                         minLines: 1,
                                         keyboardType: TextInputType.name,
                                         maxLines: null,
-                                        textInputAction: TextInputAction.newline,
+                                        textInputAction:
+                                            TextInputAction.newline,
                                         controller: usernameController,
                                         decoration: const InputDecoration(
                                             border: OutlineInputBorder(
@@ -333,16 +339,19 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                         height: 8,
                                       ),
                                       TextField(
-                                        keyboardType: TextInputType.visiblePassword,
+                                        keyboardType:
+                                            TextInputType.visiblePassword,
                                         maxLines: 1,
                                         obscureText: !passwordVisible,
-                                        textInputAction: TextInputAction.newline,
+                                        textInputAction:
+                                            TextInputAction.newline,
                                         controller: passController,
                                         decoration: InputDecoration(
                                             border: const OutlineInputBorder(
                                               borderSide: BorderSide(),
                                             ),
-                                            contentPadding: const EdgeInsets.all(10),
+                                            contentPadding:
+                                                const EdgeInsets.all(10),
                                             labelText: 'Password',
                                             suffixIcon: IconButton(
                                               onPressed: () {
@@ -365,7 +374,8 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                         height: 16,
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: Align(
@@ -376,27 +386,31 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                                   replacement:
                                                       const CircularProgressIndicator(),
                                                   child: ElevatedButton(
-                                                      style:
-                                                          ElevatedButton.styleFrom(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
                                                               backgroundColor:
-                                                                  Config().green),
+                                                                  Config()
+                                                                      .green),
                                                       onPressed: () async {
                                                         if (usernameController
-                                                                .text.isNotEmpty &&
-                                                            passController
-                                                                .text.isNotEmpty) {
+                                                                .text
+                                                                .isNotEmpty &&
+                                                            passController.text
+                                                                .isNotEmpty) {
                                                           await login();
                                                         } else {
                                                           loginbtn = false;
                                                           NOTIF_SCREEN().popUpError(
                                                               context,
-                                                              MediaQuery.of(context)
-                                                                      .size
-                                                                      .width,
+                                                              MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width,
                                                               "Username & Password Tidak Boleh Kosong");
                                                         }
                                                       },
-                                                      child: const Text("Login")),
+                                                      child:
+                                                          const Text("Login")),
                                                 ),
                                               ),
                                             ),
@@ -407,7 +421,8 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                                 onPressed: () {
                                                   Register();
                                                 },
-                                                child: const Text("Tambah User")),
+                                                child:
+                                                    const Text("Tambah User")),
                                           )
                                         ],
                                       )
@@ -632,10 +647,16 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    if(admin.text.isNotEmpty && adminPass.text.isNotEmpty && register_username.text.isNotEmpty && register_userpass.text.isNotEmpty){
+                    if (admin.text.isNotEmpty &&
+                        adminPass.text.isNotEmpty &&
+                        register_username.text.isNotEmpty &&
+                        register_userpass.text.isNotEmpty) {
                       regiteruser();
-                    }else{
-                      NOTIF_SCREEN().popUpError(context,MediaQuery.of(context).size.width,"Username & Password Tidak Boleh Kosong");
+                    } else {
+                      NOTIF_SCREEN().popUpError(
+                          context,
+                          MediaQuery.of(context).size.width,
+                          "Username & Password Tidak Boleh Kosong");
                     }
                   },
                   child: const Text('Register'),
@@ -653,6 +674,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       },
     );
   }
+
   Future<void> regiteruser() async {
     final url = Uri.parse('${link}register');
     final response = await http.post(
