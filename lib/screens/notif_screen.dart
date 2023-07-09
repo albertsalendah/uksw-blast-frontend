@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // ignore: camel_case_types
 class NOTIF_SCREEN {
   popUpError(BuildContext context, w,String text) {
-    AwesomeDialog(width: (w > 830) ? w/3 : w/2,
+    AwesomeDialog(width: (w > 830) ? w/3 : 300,
       context: context,
       showCloseIcon: true,
       closeIcon: const Icon(
@@ -18,7 +18,7 @@ class NOTIF_SCREEN {
     ).show();
   }
   popUpSuccess(BuildContext context, w,String text) {
-    AwesomeDialog(width: (w > 830) ? w/3 : w/2,
+    AwesomeDialog(width: (w > 830) ? w/3 : 300,
       context: context,
       showCloseIcon: true,
       closeIcon: const Icon(
