@@ -297,7 +297,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                       ? MediaQuery.of(context).size.width / 4
                                       : 300,
                                   decoration: BoxDecoration(
-                                    color: Config().green,
+                                    color: Configs().green,
                                     borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(4),
                                         topRight: Radius.circular(4)),
@@ -366,7 +366,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                                 passwordVisible
                                                     ? Icons.visibility
                                                     : Icons.visibility_off,
-                                                color: Config().green,
+                                                color: Configs().green,
                                               ),
                                             )),
                                       ),
@@ -389,7 +389,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                                       style: ElevatedButton
                                                           .styleFrom(
                                                               backgroundColor:
-                                                                  Config()
+                                                                  Configs()
                                                                       .green),
                                                       onPressed: () async {
                                                         if (usernameController
@@ -514,7 +514,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                       widthFactor: 1.0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Config().green,
+                          color: Configs().green,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             topRight: Radius.circular(4),
@@ -587,7 +587,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                   adminpasswordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color: Config().green,
+                                  color: Configs().green,
                                 ),
                               )),
                         ),
@@ -635,7 +635,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                                   register_passwordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color: Config().green,
+                                  color: Configs().green,
                                 ),
                               )),
                         ),

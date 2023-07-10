@@ -73,26 +73,31 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: (user.profilepicture != null) ? NetworkImage(user.profilepicture!) : const AssetImage("assets/uksw.png") as ImageProvider<Object>?,
                   ),
+                  const SizedBox(height: 8,),
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      //crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text((user.username != null) ? user.username! : '',style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                        Text((user.username != null) ? user.username! : '',style:  TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey[900])),
                         const SizedBox(height: 4,),
-                        Text((user.userid != null) ? "+${user.userid!}" : '',style: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold))
+                        Text((user.userid != null) ? "+${user.userid!}" : '',style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.grey[900]))
                       ],
                     ),
                   )
                 ],
               ),
             ),
+            const Divider(color: Colors.grey,height: 1,),
+            const SizedBox(height: 8,),
             ListTile(
               title: Text(
                 "Home",
@@ -205,7 +210,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                                       widthFactor: 1.0,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Config().green,
+                                          color: Configs().green,
                                           borderRadius: const BorderRadius.only(
                                             topLeft: Radius.circular(4),
                                             topRight: Radius.circular(4),
@@ -371,7 +376,7 @@ Widget buildScreenByIndex(int index, BuildContext context) {
                         widthFactor: 1.0,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Config().green,
+                            color: Configs().green,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(4),
                               topRight: Radius.circular(4),

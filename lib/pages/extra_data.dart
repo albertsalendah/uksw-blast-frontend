@@ -41,7 +41,7 @@ class _ExtraDataState extends State<ExtraData> {
   }
 
   void startSessionTimer() {
-    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration),
+    _timer = Timer.periodic(Duration(minutes: Configs().logoutDuration),
         (timer) async {
       final isSessionExpired = await SessionManager.isSessionExpired();
       if (isSessionExpired) {

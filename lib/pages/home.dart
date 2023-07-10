@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../navigation/sidenavigationbar.dart';
 import 'package:http/http.dart' as http;
+import '../screens/ImageDialog.dart';
 import '../screens/tabel_tamplate_pesan.dart';
 import '../utils/SessionManager.dart';
 import '../utils/config.dart';
@@ -34,7 +35,8 @@ class _HomeState extends State<Home> {
   List<PlatformFile> listNohp = [];
   List<PlatformFile> files = [];
   String selectedValue = 'All';
-  String selectedYear = '2023-2024';
+  String selectedYear =
+      '${DateTime.now().year}-${(DateTime.now().year + 1)}'; //'2023-2024';
   List<Job> jobs =
       []; //Job(id: 'dsf',message: "sdads",progress: 50,sendto: 'sdadad',status: 'sadsd')
   late SocketProvider socketProvider;
@@ -49,6 +51,7 @@ class _HomeState extends State<Home> {
   bool loadbtnsend = false;
   Uint8List? imagebytes;
   String displayMessage = '';
+  int currentImageIndex = 0;
 
   @override
   void initState() {
@@ -65,7 +68,7 @@ class _HomeState extends State<Home> {
   }
 
   void startSessionTimer() {
-    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration),
+    _timer = Timer.periodic(Duration(minutes: Configs().logoutDuration),
         (timer) async {
       final isSessionExpired = await SessionManager.isSessionExpired();
       if (isSessionExpired) {
@@ -335,24 +338,23 @@ class _HomeState extends State<Home> {
                                       Expanded(
                                         child: Row(children: [
                                           Card(
-                                            color: Config().green,
+                                            color: Configs().green,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
-                                            child: Center(
-                                              child: IconButton(
-                                                  tooltip: 'Cek Progress Pesan',
-                                                  onPressed: () {
-                                                    showListJobs(
-                                                        context, activeJobs);
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.message_outlined,
-                                                    color: Colors.white,
-                                                  )),
-                                            ),
+                                            child: IconButton(
+                                                alignment: Alignment.center,
+                                                tooltip: 'Cek Progress Pesan',
+                                                onPressed: () {
+                                                  showListJobs(
+                                                      context, activeJobs);
+                                                },
+                                                icon: const Icon(
+                                                  Icons.message_outlined,
+                                                  color: Colors.white,
+                                                )),
                                           ),
                                           const SizedBox(
                                             height: 16,
@@ -376,20 +378,19 @@ class _HomeState extends State<Home> {
                                       Expanded(
                                         child: Row(children: [
                                           Card(
-                                            color: Config().green,
+                                            color: Configs().green,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
-                                            child: const Center(
-                                              child: IconButton(
-                                                  onPressed: null,
-                                                  icon: Icon(
-                                                    Icons.contact_page,
-                                                    color: Colors.white,
-                                                  )),
-                                            ),
+                                            child: const IconButton(
+                                                alignment: Alignment.center,
+                                                onPressed: null,
+                                                icon: Icon(
+                                                  Icons.contact_page,
+                                                  color: Colors.white,
+                                                )),
                                           ),
                                           const SizedBox(
                                             height: 16,
@@ -428,14 +429,13 @@ class _HomeState extends State<Home> {
                                                   BorderRadius.circular(150),
                                             ),
                                             elevation: 3,
-                                            child: const Center(
-                                              child: IconButton(
-                                                  onPressed: null,
-                                                  icon: Icon(
-                                                    Icons.image,
-                                                    color: Colors.white,
-                                                  )),
-                                            ),
+                                            child: const IconButton(
+                                                alignment: Alignment.center,
+                                                onPressed: null,
+                                                icon: Icon(
+                                                  Icons.image,
+                                                  color: Colors.white,
+                                                )),
                                           ),
                                           const SizedBox(
                                             height: 16,
@@ -474,16 +474,15 @@ class _HomeState extends State<Home> {
                                                 BorderRadius.circular(150),
                                           ),
                                           elevation: 3,
-                                          child: Center(
-                                            child: IconButton(
-                                                onPressed: () {
-                                                  showListProgdi(context);
-                                                },
-                                                icon: const Icon(
-                                                  Icons.list,
-                                                  color: Colors.white,
-                                                )),
-                                          )),
+                                          child: IconButton(
+                                              alignment: Alignment.center,
+                                              onPressed: () {
+                                                showListProgdi(context);
+                                              },
+                                              icon: const Icon(
+                                                Icons.list,
+                                                color: Colors.white,
+                                              ))),
                                     ),
                                     const SizedBox(
                                       width: 8,
@@ -512,7 +511,8 @@ class _HomeState extends State<Home> {
                                             BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
-                                      child: Center(
+                                      child: Align(
+                                        alignment: Alignment.center,
                                         child: PopupMenuButton<String>(
                                           tooltip:
                                               'Pilih Tahun Ajaran (Untuk Mengambil Data Dari API)',
@@ -576,7 +576,8 @@ class _HomeState extends State<Home> {
                                             BorderRadius.circular(150),
                                       ),
                                       elevation: 3,
-                                      child: Center(
+                                      child: Align(
+                                        alignment: Alignment.center,
                                         child: PopupMenuButton<String>(
                                           tooltip:
                                               'Status Registrasi Ulang (Jika Mengirim Pesan Melalui File Excel Dibiarkan Tetap All)',
@@ -647,43 +648,41 @@ class _HomeState extends State<Home> {
                                               BorderRadius.circular(150),
                                         ),
                                         elevation: 3,
-                                        child: Center(
-                                          child: IconButton(
-                                            tooltip:
-                                                'Untuk Mengecek Total Nomor Handphone Pastikan Memilih Program Studi,Tahun Ajaran,dan Status Registrasi Ulang (Hanya Untuk Cek Total Nomor dari API)',
-                                            onPressed: () async {
-                                              if (selectedKodeProgdi
-                                                  .isNotEmpty) {
-                                                await checkTotalMahasiswa();
-                                                if (restotalNomor.isNotEmpty &&
-                                                    !isLoading) {
-                                                  NOTIF_SCREEN().popUpSuccess(
-                                                      context,
-                                                      MediaQuery.of(context)
-                                                          .size
-                                                          .width,
-                                                      "Total Nomor Yang Ditemukan : $restotalNomor");
-                                                } else {
-                                                  NOTIF_SCREEN().popUpError(
-                                                      context,
-                                                      MediaQuery.of(context)
-                                                          .size
-                                                          .width,
-                                                      "Gagal Mengambil Data Dari Server");
-                                                }
+                                        child: IconButton(
+                                          alignment: Alignment.center,
+                                          tooltip:
+                                              'Untuk Mengecek Total Nomor Handphone Pastikan Memilih Program Studi,Tahun Ajaran,dan Status Registrasi Ulang (Hanya Untuk Cek Total Nomor dari API)',
+                                          onPressed: () async {
+                                            if (selectedKodeProgdi.isNotEmpty) {
+                                              await checkTotalMahasiswa();
+                                              if (restotalNomor.isNotEmpty &&
+                                                  !isLoading) {
+                                                NOTIF_SCREEN().popUpSuccess(
+                                                    context,
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width,
+                                                    "Total Nomor Yang Ditemukan : $restotalNomor");
                                               } else {
                                                 NOTIF_SCREEN().popUpError(
                                                     context,
                                                     MediaQuery.of(context)
                                                         .size
                                                         .width,
-                                                    "Silahkan Pilih Progdi");
+                                                    "Gagal Mengambil Data Dari Server");
                                               }
-                                            },
-                                            icon: const Icon(
-                                              Icons.numbers,
-                                              color: Colors.white,
-                                            ),
+                                            } else {
+                                              NOTIF_SCREEN().popUpError(
+                                                  context,
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  "Silahkan Pilih Progdi");
+                                            }
+                                          },
+                                          icon: const Icon(
+                                            Icons.numbers,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ),
@@ -793,14 +792,44 @@ class _HomeState extends State<Home> {
                                         ),
                                       ),
                                     ),
+                                    Visibility(
+                                      visible: (selectedKodeProgdi == '000'),
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(150),
+                                        ),
+                                        color: Configs().green,
+                                        elevation: 3,
+                                        child: IconButton(
+                                            alignment: Alignment.center,
+                                            tooltip:
+                                                'Contoh Template File Excel',
+                                            onPressed: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return ImageDialog(
+                                                      currentImageIndex:
+                                                          currentImageIndex);
+                                                },
+                                              );
+                                            },
+                                            icon: const Icon(
+                                                Icons.question_mark,
+                                                color: Colors.white)),
+                                      ),
+                                    ),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(150),
                                       ),
-                                      color: Config().green,
+                                      color: Configs().green,
                                       elevation: 3,
                                       child: IconButton(
+                                          alignment: Alignment.center,
                                           tooltip:
                                               'Tambah Template Pesan (Kategori Pesan & Pesan Tidak Boleh Kosong)',
                                           onPressed: () async {
@@ -842,9 +871,10 @@ class _HomeState extends State<Home> {
                                         borderRadius:
                                             BorderRadius.circular(150),
                                       ),
-                                      color: Config().green,
+                                      color: Configs().green,
                                       elevation: 3,
                                       child: IconButton(
+                                        alignment: Alignment.center,
                                         tooltip: 'Lihat Daftar Template Pesan',
                                         icon: const Icon(Icons.list,
                                             color: Colors.white),
@@ -864,7 +894,7 @@ class _HomeState extends State<Home> {
                                       ),
                                     ),
                                     Card(
-                                      color: Config().green,
+                                      color: Configs().green,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(150),
@@ -875,6 +905,7 @@ class _HomeState extends State<Home> {
                                         replacement:
                                             const CircularProgressIndicator(),
                                         child: IconButton(
+                                          alignment: Alignment.center,
                                           tooltip: 'Kirim Pesan',
                                           icon: const Icon(Icons.send,
                                               color: Colors.white),
@@ -968,7 +999,7 @@ class _HomeState extends State<Home> {
                                           LinearProgressIndicator(
                                             value: job.progress / 100,
                                             backgroundColor: Colors.white,
-                                            color: Config().green,
+                                            color: Configs().green,
                                           ),
                                           const SizedBox(
                                             height: 4,
@@ -1007,9 +1038,11 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            Future.delayed(const Duration(seconds: 3), () {
-              Navigator.of(context).pop();
-            });
+            // dialogTimer = Timer(const Duration(seconds: 3), () {
+            //   if (mounted) {
+            //     Navigator.of(context).pop();
+            //   }
+            // });
             return AlertDialog(
               titlePadding: EdgeInsets.zero,
               title: Align(
@@ -1018,7 +1051,7 @@ class _HomeState extends State<Home> {
                   widthFactor: 1.0,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Config().green,
+                      color: Configs().green,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(4),
                         topRight: Radius.circular(4),
@@ -1082,7 +1115,7 @@ class _HomeState extends State<Home> {
                                       LinearProgressIndicator(
                                         value: job.progress / 100,
                                         backgroundColor: Colors.white,
-                                        color: Config().green,
+                                        color: Configs().green,
                                       ),
                                       const SizedBox(
                                         height: 4,
@@ -1136,7 +1169,7 @@ class _HomeState extends State<Home> {
               widthFactor: 1.0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Config().green,
+                  color: Configs().green,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     topRight: Radius.circular(4),

@@ -118,7 +118,7 @@ class _HistoryState extends State<History> {
   }
 
   void startSessionTimer() {
-    _timer = Timer.periodic(Duration(minutes: Config().logoutDuration),
+    _timer = Timer.periodic(Duration(minutes: Configs().logoutDuration),
         (timer) async {
       final isSessionExpired = await SessionManager.isSessionExpired();
       if (isSessionExpired) {
@@ -365,7 +365,7 @@ class _HistoryState extends State<History> {
                         widthFactor: 1.0,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Config().green,
+                            color: Configs().green,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(4),
                               topRight: Radius.circular(4),
