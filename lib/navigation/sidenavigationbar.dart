@@ -87,7 +87,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       //crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text((user.username != null) ? user.username! : '',style:  TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey[900])),
+                        Text((user.username != null) ? user.username! : '',textAlign: TextAlign.center,style:  TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey[900])),
                         const SizedBox(height: 4,),
                         Text((user.userid != null) ? "+${user.userid!}" : '',style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.grey[900]))
                       ],

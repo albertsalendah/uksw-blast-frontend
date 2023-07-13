@@ -28,19 +28,15 @@ class _MessageCardState extends State<MessageCard> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 color: const Color(0xffdcf8c6),
-                child: Stack(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: ExpandableText(
-                          widget.message,
-                          expandText: 'show more',
-                          collapseText: 'show less',
-                          maxLines: 21,
-                          linkColor: Colors.blue,
-                        ))
-                  ],
-                )),
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: ExpandableText(
+                      widget.message,
+                      expandText: 'show more',
+                      collapseText: 'show less',
+                      maxLines: 21,
+                      linkColor: Colors.blue,
+                    ))),
           ),
         ),
       );
@@ -57,31 +53,27 @@ class _MessageCardState extends State<MessageCard> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6)),
                 color: const Color(0xffdcf8c6),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.memory(
-                              widget.imagebytes!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const SizedBox(height: 8,),
-                          ExpandableText(
-                            widget.message,
-                            expandText: 'show more',
-                            collapseText: 'show less',
-                            maxLines: 21,
-                            linkColor: Colors.blue,
-                          )
-                        ],
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.memory(
+                          widget.imagebytes!,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 8,),
+                      ExpandableText(
+                        widget.message,
+                        expandText: 'show more',
+                        collapseText: 'show less',
+                        maxLines: 21,
+                        linkColor: Colors.blue,
+                      )
+                    ],
+                  ),
                 )),
           ),
         ),

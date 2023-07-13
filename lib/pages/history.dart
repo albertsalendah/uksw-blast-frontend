@@ -33,6 +33,7 @@ class _HistoryState extends State<History> {
   List<history_models> listpesan = [];
   Timer? _timer;
   TextEditingController searchController = TextEditingController();
+  bool isExpand = false;
 
   void handleHistorySelection(String idPesan) {
     getlistpesan(idPesan);
@@ -219,6 +220,7 @@ class _HistoryState extends State<History> {
                                             Expanded(
                                               child: InkWell(
                                                 onTap: () {
+                                                  isExpand = !isExpand;
                                                   handleHistorySelection(
                                                       filteredList[index]
                                                               .id_pesan ??
@@ -304,7 +306,7 @@ class _HistoryState extends State<History> {
                       ),
                     ),
                     Visibility(
-                        visible: listpesan.isNotEmpty && width > 800,
+                        visible: listpesan.isNotEmpty && width > 800 && isExpand,
                         child: Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
