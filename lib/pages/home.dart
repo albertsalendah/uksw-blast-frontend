@@ -32,6 +32,7 @@ class _HomeState extends State<Home> {
   final String link = Links().link;
   TextEditingController messageController = TextEditingController();
   TextEditingController kategoriPesan = TextEditingController();
+  TextEditingController kodeNegara = TextEditingController();
   List<PlatformFile> listNohp = [];
   List<PlatformFile> files = [];
   String selectedValue = 'All';
@@ -109,6 +110,7 @@ class _HomeState extends State<Home> {
     request.fields['tahun'] = selectedYear;
     request.fields['progdi'] = selectedKodeProgdi;
     request.fields['status_regis'] = selectedValue;
+    request.fields['kode_negara'] = kodeNegara.text;
 
     // Attach files, if any
     if (files.isNotEmpty) {
@@ -174,7 +176,8 @@ class _HomeState extends State<Home> {
     setState(() {
       isLoading = true;
     });
-    final url = Uri.parse('${link}checktotalmahasiswa');
+    //final url = Uri.parse('${link}checktotalmahasiswa');
+    final url = Uri.parse('${link}downloadDataMahasiswa');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -200,8 +203,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> pickFiles() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(allowMultiple: false);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+    );
 
     if (result != null) {
       List<PlatformFile> file = result.files;
@@ -716,6 +720,35 @@ class _HomeState extends State<Home> {
                                     child: IntrinsicWidth(
                                       child: Tooltip(
                                         message:
+                                            "Masukkan Kode Negara Disini contoh : 62",
+                                        child: TextField(
+                                          decoration: const InputDecoration(
+                                            prefixText: '+',
+                                            prefixStyle:
+                                                TextStyle(fontSize: 16),
+                                            hintText: 'Kode negara',
+                                            border: InputBorder.none,
+                                            contentPadding: EdgeInsets.only(
+                                                left: 10, right: 10),
+                                          ),
+                                          maxLines: 1,
+                                          controller: kodeNegara,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 7,
+                                  ),
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(25)),
+                                    elevation: 3,
+                                    color: Colors.white,
+                                    child: IntrinsicWidth(
+                                      child: Tooltip(
+                                        message:
                                             "Untuk Memudahkan Pencarian History Pesan Yang Dikirim.\nJika Mengirim Pesan Dengan File Excel Maka Kategori Pesan Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Nama File Excel)"
                                             "\nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika.xlxs = File Excel => 'Menjadi Open Day_Teknik Informatika.xlxs'"
                                             "\nJika Mengirim Pesan Menggunakan Data dari API Maka Akan Menggunakan Format (Kata/Kalimat Yang Diketik + _Program Studi yang dipilih) \nContoh : Open Day = (Kata/Kalimat Yang Diketik), Teknik Informatika = Program Studi yang dipilih => 'Menjadi Open Day_Teknik Informatika'"
@@ -789,14 +822,12 @@ class _HomeState extends State<Home> {
                                                     right: 10),
                                             enabledBorder:
                                                 const OutlineInputBorder(
-                                                    borderSide:
-                                                        BorderSide(
-                                                            color:
-                                                                Colors.white),
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                25)))
+                                              borderSide: BorderSide(
+                                                  color: Colors.white),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(25),
+                                              ),
+                                            )
                                             //labelText: 'Pesan'
                                             ),
                                       ),
@@ -917,6 +948,7 @@ class _HomeState extends State<Home> {
                                           if (messageController
                                                   .text.isNotEmpty &&
                                               kategoriPesan.text.isNotEmpty &&
+                                              kodeNegara.text.isNotEmpty &&
                                               ((selectedKodeProgdi != '000' &&
                                                       selectedKodeProgdi
                                                           .isNotEmpty) ||
@@ -928,7 +960,7 @@ class _HomeState extends State<Home> {
                                                 MediaQuery.of(context)
                                                     .size
                                                     .width,
-                                                "Pesan,Kategori Pesan & Progdi Tidak Boleh Kosong");
+                                                "Pesan,Kategori Pesan , Progdi & Kode Negara Tidak Boleh Kosong");
                                           }
                                           setState(() {
                                             messageController.text = '';

@@ -253,6 +253,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       } else if (mainmenuV) {
         return MaterialApp(
           theme: ThemeData(
+            useMaterial3: false,
               appBarTheme:
                   const AppBarTheme(color: Color.fromRGBO(0, 167, 131, 1)),
               primaryColor: const Color.fromRGBO(0, 167, 131, 1)),
