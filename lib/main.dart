@@ -253,7 +253,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       } else if (mainmenuV) {
         return MaterialApp(
           theme: ThemeData(
-            useMaterial3: false,
+              useMaterial3: false,
               appBarTheme:
                   const AppBarTheme(color: Color.fromRGBO(0, 167, 131, 1)),
               primaryColor: const Color.fromRGBO(0, 167, 131, 1)),
@@ -270,6 +270,11 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       }
     } else {
       return MaterialApp(
+        theme: ThemeData(
+            useMaterial3: false,
+            appBarTheme:
+                const AppBarTheme(color: Color.fromRGBO(0, 167, 131, 1)),
+            primaryColor: const Color.fromRGBO(0, 167, 131, 1)),
         home: Stack(
           children: [
             Image.asset("assets/whatsapp_Back.png",
